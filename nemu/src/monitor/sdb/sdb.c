@@ -47,9 +47,34 @@ static int cmd_c(char *args) {
   return 0;
 }
 
-
 static int cmd_q(char *args) {
   return -1;
+}
+
+static int cmd_si(char *args) {
+  if (strlen(args) != 0) {
+    uint64_t n;
+    if (sscanf(args, "%ld", &n) == 1)
+      cpu_exec(n);
+    else
+     Log("Bad paramater");
+  }
+  else {
+    cpu_exec(1);
+  }
+  return 0;
+}
+
+static int cmd_info(char *args) {
+  if (strcmp(args, "r")) {
+    isa_reg_display();
+  } else if (strcmp(args, "w")) {
+    
+  }
+  else {
+    Log("Unknown subcommand");
+  }
+  return 0;
 }
 
 static int cmd_help(char *args);
@@ -64,6 +89,8 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
+  { "si", "Step N", cmd_si },
+  { "info", "Show info", cmd_info },
 
 };
 
