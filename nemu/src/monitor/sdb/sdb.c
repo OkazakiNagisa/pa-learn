@@ -114,6 +114,10 @@ static int cmd_x(char *args) {
   return 0;
 }
 
+int cmd_p(char *args) {
+  return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
