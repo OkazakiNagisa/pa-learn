@@ -15,6 +15,7 @@
 
 #include <isa.h>
 #include <cpu/cpu.h>
+#include <memory/paddr.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
@@ -52,9 +53,9 @@ static int cmd_q(char *args) {
 }
 
 static int cmd_si(char *args) {
-  if (strlen(args) != 0) {
-    uint64_t n;
-    if (sscanf(args, "%ld", &n) == 1)
+  if (args && strlen(args) != 0) {
+    word_t n;
+    if (sscanf(args, "%d", &n) == 1)
       cpu_exec(n);
     else
      Log("Bad paramater");
@@ -66,13 +67,49 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_info(char *args) {
-  if (strcmp(args, "r")) {
+  if (!strcmp(args, "r")) {
     isa_reg_display();
-  } else if (strcmp(args, "w")) {
-    
+  } else if (!strcmp(args, "w")) {
+    Log("TODO");
   }
   else {
     Log("Unknown subcommand");
+  }
+  return 0;
+}
+
+inline static void hex_dump(paddr_t data, int size) {
+  int i, offset;
+  for (offset = 0; offset < size; offset += 16) {
+    // print addr
+    printf("%08x  ", data + offset);
+    // print hex
+    for (i = 0; i < 16; i++) {
+      if (i % 8 == 0)
+        putchar(' ');
+
+      if (offset + i < size)
+        printf("%02x ", guest_to_host(data)[offset + i]);
+      else
+        printf("   ");
+    }
+    printf("   ");
+    // print ascii
+    for (i = 0; i < 16 && offset + i < size; i++) {
+      if (isprint(guest_to_host(data)[offset + i]))
+        printf("%c", guest_to_host(data)[offset + i]);
+      else
+        putchar('.');
+    }
+    putchar('\n');
+  }
+}
+
+static int cmd_x(char *args) {
+  word_t n;
+  paddr_t expr;
+  if (sscanf(args, "%d %x", &n, &expr) == 2) {
+    hex_dump(expr, n);
   }
   return 0;
 }
@@ -91,6 +128,7 @@ static struct {
   /* TODO: Add more commands */
   { "si", "Step N", cmd_si },
   { "info", "Show info", cmd_info },
+  { "x", "Show memory", cmd_x },
 
 };
 
