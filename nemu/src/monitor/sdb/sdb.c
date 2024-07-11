@@ -129,6 +129,7 @@ static struct {
   { "si", "Step N", cmd_si },
   { "info", "Show info", cmd_info },
   { "x", "Show memory", cmd_x },
+  { "p", "Eval", cmd_p },
 
 };
 
