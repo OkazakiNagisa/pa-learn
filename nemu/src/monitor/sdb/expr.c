@@ -88,7 +88,7 @@ static bool make_token(char *e) {
   int i;
   regmatch_t pmatch;
 
-  nr_token = 0;
+  nr_token = -1;
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
@@ -107,8 +107,12 @@ static bool make_token(char *e) {
          * to record the token in the array `tokens'. For certain types
          * of tokens, some extra actions should be performed.
          */
-        static int tokens_i = 0;
-        tokens[tokens_i++].type = rules[i].token_type;
+        if (nr_token >= 31) {
+          Log("Token count too long!");
+          break;
+        }
+        nr_token++;
+        tokens[nr_token].type = rules[i].token_type;
 
         switch (rules[i].token_type) {
         case TK_NUMBER_DEC:
@@ -116,8 +120,8 @@ static bool make_token(char *e) {
             Log("Token length too long!");
             break;
           }
-          memcpy(&tokens[tokens_i].str, &e[position - substr_len], substr_len);
-          tokens[tokens_i].str[substr_len] = 0;
+          memcpy(&tokens[nr_token].str, &e[position - substr_len], substr_len);
+          tokens[nr_token].str[substr_len] = 0;
           break;
         case TK_EQ:
         case TK_ADD:
@@ -143,6 +147,24 @@ static bool make_token(char *e) {
   }
 
   return true;
+}
+
+typedef struct IntResult {
+  int result;
+  bool succeeded;
+} IntResult;
+
+IntResult eval(int p, int q) {
+  IntResult ret;
+  ret.succeeded = true;
+  if (p > q || p > nr_token || q > nr_token) {
+    panic("????");
+  } else if (p == q) {
+    ret.result = atoi(tokens[p].str);
+    return ret;
+  } else if () {
+  
+  }
 }
 
 word_t expr(char *e, bool *success) {
