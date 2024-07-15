@@ -32,16 +32,12 @@ int main(int argc, char *argv[])
         // char *buf = calloc(1, size);
         // assert(buf);
         // fread(buf, size, 1, f);
-        char *line = NULL;
-        size_t len = 0, read = 0;
-        while ((read = getline(&line, &len, f)) != -1)
+        int expected;
+        char *expression = NULL;
+        while (fscanf(f, "%d %s", &expected, expression))
         {
-            int expected;
-            line = strtok(line, " ");
-            sscanf("%d", line, &expected);
-            line = strtok(NULL, " ");
             bool succ;
-            int result = expr(line, &succ);
+            int result = expr(expression, &succ);
             assert(result == expected);
         }
         fclose(f);
