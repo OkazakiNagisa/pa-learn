@@ -11,3 +11,6 @@
 !init.sh
 /fceux-am
 !/.vscode/*
+!/.clang-format
+!/.clang-tidy
+!/.editorconfig
