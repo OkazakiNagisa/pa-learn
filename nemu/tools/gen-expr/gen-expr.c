@@ -32,6 +32,8 @@ static char *code_format = "#include <stdio.h>\n"
                            "}";
 
 int num_generated = 0, op_generated = 0;
+int tokens = 0;
+int layers = 0;
 
 int choose(int limit)
 {
@@ -51,6 +53,8 @@ void gen_spaces()
     {
         gen(' ');
     }
+    if (len > 0)
+        tokens++;
 }
 
 void gen_num()
@@ -58,6 +62,7 @@ void gen_num()
     num_generated = 1;
     int a = abs(rand() % 1000000);
     buf_pos += sprintf(buf + buf_pos + 1, "%d", a);
+    tokens++;
     gen_spaces();
 }
 
@@ -81,20 +86,30 @@ void gen_rand_op()
     default:
         assert(0);
     }
+    tokens++;
     gen_spaces();
 }
 
 static void gen_rand_expr()
 {
-    switch (choose(3))
+    layers++;
+    int sel = choose(3);
+    while (layers == 1 && sel == 0)
+        sel = choose(3);
+    if (layers == 5)
+        sel = 0;
+
+    switch (sel)
     {
     case 0:
         gen_num();
         break;
     case 1:
         gen('(');
+        tokens++;
         gen_rand_expr();
         gen(')');
+        tokens++;
         break;
     case 2:
         gen_rand_expr();
@@ -105,6 +120,7 @@ static void gen_rand_expr()
         assert(0);
         break;
     }
+    layers--;
 }
 
 int main(int argc, char *argv[])
@@ -119,12 +135,6 @@ int main(int argc, char *argv[])
     int i;
     for (i = 0; i < loop; i++)
     {
-        gen_spaces();
-        do
-        {
-            gen_rand_expr();
-            gen_rand_op();
-        } while (!num_generated || !op_generated);
         gen_rand_expr();
 
         buf[++buf_pos] = '\0';
@@ -136,7 +146,7 @@ int main(int argc, char *argv[])
         fputs(code_buf, fp);
         fclose(fp);
 
-        int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
+        int ret = system("gcc -Werror -Wno-overflow /tmp/.code.c -o /tmp/.expr");
         if (ret != 0)
             continue;
 
@@ -148,7 +158,10 @@ int main(int argc, char *argv[])
         pclose(fp);
 
         printf("%u %s\n", result, buf);
+
         buf_pos = -1;
+        tokens = 0;
+        assert(layers == 0);
     }
     return 0;
 }
