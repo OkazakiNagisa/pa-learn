@@ -177,7 +177,7 @@ bool check_parenteses(int p, int q)
         return false;
 
     int stack_pointer = 0;
-    for (int i = p + 1; p <= q - 1; p++)
+    for (int i = p + 1; i <= q - 1; i++)
     {
         if (tokens[i].type == TK_BRACKET_LEFT)
             stack_pointer++;
@@ -185,33 +185,93 @@ bool check_parenteses(int p, int q)
         if (tokens[i].type == TK_BRACKET_RIGHT)
             if (--stack_pointer < 0)
                 return false;
-
     }
     return stack_pointer == 0;
 }
 
 IntResult eval(int p, int q)
 {
+    while (tokens[p].type == TK_NOTYPE)
+        p++;
+    while (tokens[q].type == TK_NOTYPE)
+        q--;
+
     IntResult ret;
-    ret.succeeded = true;
     if (p > q || p > nr_token || q > nr_token)
         panic("????");
 
     else if (p == q)
     {
         ret.result = atoi(tokens[p].str);
+        ret.succeeded = true;
         return ret;
     }
     else if (check_parenteses(p, q))
         return eval(p + 1, q - 1);
     else
     {
-        int split_pos = p;
-        for (int i = p; p <= q; p++)
+        int split_pos = -1;
+        int stack_pointer = 0;
+        for (int i = p; i <= q; i++)
         {
-            switch (tokens[i].type) {
+            // brackets
+            if (tokens[i].type == TK_BRACKET_LEFT)
+            {
+                stack_pointer++;
+                continue;
             }
+            if (tokens[i].type == TK_BRACKET_RIGHT)
+            {
+                if (--stack_pointer < 0)
+                {
+                    ret.succeeded = false;
+                    return ret;
+                }
+                continue;
+            }
+            if (stack_pointer)
+                continue;
+
+            if (tokens[i].type == TK_ADD || tokens[i].type == TK_MINUS)
+            {
+                split_pos = i;
+                break;
+            }
+            if (tokens[i].type == TK_MULTIPLY || tokens[i].type == TK_DIV)
+                if (split_pos == -1)
+                    split_pos = i;
         }
+        if (split_pos == -1)
+        {
+            ret.succeeded = false;
+            return ret;
+        }
+
+        IntResult result_l = eval(p, split_pos - 1);
+        IntResult result_r = eval(split_pos + 1, q);
+        IntResult result;
+        result.succeeded = result_l.succeeded && result_r.succeeded;
+        if (!result.succeeded)
+            return result;
+
+        switch (tokens[split_pos].type)
+        {
+        case TK_ADD:
+            result.result = result_l.result + result_r.result;
+            break;
+        case TK_MINUS:
+            result.result = result_l.result - result_r.result;
+            break;
+        case TK_MULTIPLY:
+            result.result = result_l.result * result_r.result;
+            break;
+        case TK_DIV:
+            result.result = result_l.result / result_r.result;
+            break;
+        default:
+            panic("???");
+        }
+        return result;
     }
 }
 
@@ -224,7 +284,12 @@ word_t expr(char *e, bool *success)
     }
 
     /* TODO: Insert codes to evaluate the expression. */
-    // TODO();
+    IntResult result = eval(0, nr_token);
+    if (result.succeeded)
+        printf("eval: %d\n", result.result);
+    else
+        printf("eval failed.\n");
 
+    *success = result.succeeded;
     return 0;
 }
