@@ -1,35 +1,61 @@
 /***************************************************************************************
-* Copyright (c) 2014-2022 Zihao Yu, Nanjing University
-*
-* NEMU is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*          http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-*
-* See the Mulan PSL v2 for more details.
-***************************************************************************************/
+ * Copyright (c) 2014-2022 Zihao Yu, Nanjing University
+ *
+ * NEMU is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan
+ *PSL v2. You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+ *KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+ *NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ *
+ * See the Mulan PSL v2 for more details.
+ ***************************************************************************************/
 
 #include <common.h>
+#include "monitor/sdb/sdb.h"
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
 
-int main(int argc, char *argv[]) {
-  /* Initialize the monitor. */
+int main(int argc, char *argv[])
+{
+    if (!strcmp(argv[1], "xx"))
+    {
+        FILE *f = fopen(argv[2], "r");
+        assert(f);
+        // int size = ftell(f);
+        // rewind(f);
+        // char *buf = calloc(1, size);
+        // assert(buf);
+        // fread(buf, size, 1, f);
+        char *line = NULL;
+        size_t len = 0, read = 0;
+        while ((read = getline(&line, &len, f)) != -1)
+        {
+            int expected;
+            line = strtok(line, " ");
+            sscanf("%d", line, &expected);
+            line = strtok(NULL, " ");
+            bool succ;
+            int result = expr(line, &succ);
+            assert(result == expected);
+        }
+        fclose(f);
+        return 0;
+    }
+    /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
-  am_init_monitor();
+    am_init_monitor();
 #else
-  init_monitor(argc, argv);
+    init_monitor(argc, argv);
 #endif
 
-  /* Start engine. */
-  engine_start();
+    /* Start engine. */
+    engine_start();
 
-  return is_exit_status_bad();
+    return is_exit_status_bad();
 }

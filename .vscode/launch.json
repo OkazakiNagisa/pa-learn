@@ -10,7 +10,10 @@
             "request": "launch",
             "stopAtEntry": false,
             "program": "${workspaceFolder}/nemu/build/riscv32-nemu-interpreter",
-            "args": [],
+            "args": [
+                "xx",
+                "../tools/gen-expr/input"
+            ],
             "cwd": "${workspaceFolder}/nemu/build",
             "environment": [],
             "externalConsole": false,

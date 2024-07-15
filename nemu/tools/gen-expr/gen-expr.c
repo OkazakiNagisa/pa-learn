@@ -148,7 +148,10 @@ int main(int argc, char *argv[])
 
         int ret = system("gcc -Werror -Wno-overflow /tmp/.code.c -o /tmp/.expr");
         if (ret != 0)
+        {
+            i--;
             continue;
+        }
 
         fp = popen("/tmp/.expr", "r");
         assert(fp != NULL);

@@ -291,5 +291,5 @@ word_t expr(char *e, bool *success)
         printf("eval failed.\n");
 
     *success = result.succeeded;
-    return 0;
+    return result.result;
 }
