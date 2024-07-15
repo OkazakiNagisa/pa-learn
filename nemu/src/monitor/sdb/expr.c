@@ -44,8 +44,8 @@ static struct rule {
      */
 
     {" +", TK_NOTYPE}, // spaces
-    {"\\+", '+'},        // plus
-    {"==", TK_EQ},       // equal
+    {"\\+", '+'},      // plus
+    {"==", TK_EQ},     // equal
     {"-", TK_MINUS},
     {"\\*", TK_MULTIPLY},
     {"/", TK_DIV},
@@ -154,6 +154,23 @@ typedef struct IntResult {
   bool succeeded;
 } IntResult;
 
+bool check_parenteses(int p, int q) {
+  if (tokens[p].type != TK_BRACKET_LEFT || tokens[q].type != TK_BRACKET_RIGHT) {
+    return false;
+  }
+  int stack_pointer = 0;
+  for (int i = p + 1; p <= q - 1; p++) {
+    if (tokens[i].type == TK_BRACKET_LEFT) {
+      stack_pointer++;
+    }
+    if (tokens[i].type == TK_BRACKET_RIGHT) {
+      if (--stack_pointer < 0)
+        return false;
+    }
+  }
+  return stack_pointer == 0;
+}
+
 IntResult eval(int p, int q) {
   IntResult ret;
   ret.succeeded = true;
@@ -162,8 +179,10 @@ IntResult eval(int p, int q) {
   } else if (p == q) {
     ret.result = atoi(tokens[p].str);
     return ret;
-  } else if () {
-  
+  } else if (check_parenteses(p, q)) {
+    return eval(p + 1, q - 1);
+  } else {
+    
   }
 }
 
