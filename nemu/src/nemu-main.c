@@ -23,8 +23,10 @@ int is_exit_status_bad();
 
 int main(int argc, char *argv[])
 {
-    if (argc == 2 && !strcmp(argv[1], "xx"))
+    if (argc == 3 && !strcmp(argv[1], "xx"))
     {
+        void init_regex();
+        init_regex();
         FILE *f = fopen(argv[2], "r");
         assert(f);
         // int size = ftell(f);
@@ -34,12 +36,19 @@ int main(int argc, char *argv[])
         // fread(buf, size, 1, f);
         uint32_t expected;
         char expression[65536] = {0};
-        while (fscanf(f, "%u %[^\n]", &expected, expression))
+        while (fscanf(f, "%u %[^\n]", &expected, expression) > 0)
         {
             getc(f);
             bool succ;
             int result = expr(expression, &succ);
-            assert(result == expected);
+            if (!succ)
+                printf("expr: %s, expected: %u, calc: failed\n", expression,
+                       expected);
+            else if (result != expected)
+                printf("expr: %s, expected: %u, calc: %u\n", expression,
+                       expected, result);
+            else
+                printf("expr good\n");
         }
         fclose(f);
         return 0;

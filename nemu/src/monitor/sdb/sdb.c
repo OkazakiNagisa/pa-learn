@@ -115,8 +115,12 @@ static int cmd_x(char *args) {
 }
 
 int cmd_p(char *args) {
-  bool result;
-  expr(args, &result);
+  bool succeeded;
+  word_t result = expr(args, &succeeded);
+  if (succeeded)
+      printf("eval: %u\n", result);
+  else
+      printf("eval failed.\n");
   return 0;
 }
 

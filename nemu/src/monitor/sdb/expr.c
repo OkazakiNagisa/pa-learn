@@ -20,7 +20,7 @@
  */
 #include <regex.h>
 
-enum
+enum TokenType
 {
     TK_NOTYPE = 256,
     TK_EQ = '=',
@@ -81,7 +81,7 @@ void init_regex()
 
 typedef struct token
 {
-    int type;
+    enum TokenType type;
     char str[32];
 } Token;
 
@@ -104,12 +104,12 @@ static bool make_token(char *e)
             if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 &&
                 pmatch.rm_so == 0)
             {
-                char *substr_start = e + position;
+                // char *substr_start = e + position;
                 int substr_len = pmatch.rm_eo;
 
-                Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-                    i, rules[i].regex, position, substr_len, substr_len,
-                    substr_start);
+                // Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
+                //     i, rules[i].regex, position, substr_len, substr_len,
+                //     substr_start);
 
                 position += substr_len;
 
@@ -266,6 +266,11 @@ UintResult eval(int p, int q)
             result.result = result_l.result * result_r.result;
             break;
         case TK_DIV:
+            if (result_r.result == 0)
+            {
+                result.succeeded = false;
+                return result;
+            }
             result.result = result_l.result / result_r.result;
             break;
         default:
@@ -285,10 +290,6 @@ word_t expr(char *e, bool *success)
 
     /* TODO: Insert codes to evaluate the expression. */
     UintResult result = eval(0, nr_token);
-    if (result.succeeded)
-        printf("eval: %u\n", result.result);
-    else
-        printf("eval failed.\n");
 
     *success = result.succeeded;
     return result.result;
