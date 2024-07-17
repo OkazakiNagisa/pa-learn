@@ -23,7 +23,7 @@ int is_exit_status_bad();
 
 int main(int argc, char *argv[])
 {
-    if (!strcmp(argv[1], "xx"))
+    if (argc == 2 && !strcmp(argv[1], "xx"))
     {
         FILE *f = fopen(argv[2], "r");
         assert(f);
@@ -32,10 +32,11 @@ int main(int argc, char *argv[])
         // char *buf = calloc(1, size);
         // assert(buf);
         // fread(buf, size, 1, f);
-        int expected;
-        char *expression = NULL;
-        while (fscanf(f, "%d %s", &expected, expression))
+        uint32_t expected;
+        char expression[65536] = {0};
+        while (fscanf(f, "%u %[^\n]", &expected, expression))
         {
+            getc(f);
             bool succ;
             int result = expr(expression, &succ);
             assert(result == expected);

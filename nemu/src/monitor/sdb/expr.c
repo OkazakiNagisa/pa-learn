@@ -165,11 +165,11 @@ static bool make_token(char *e)
     return true;
 }
 
-typedef struct IntResult
+typedef struct UintResult
 {
-    int result;
+    uint32_t result;
     bool succeeded;
-} IntResult;
+} UintResult;
 
 bool check_parenteses(int p, int q)
 {
@@ -189,21 +189,21 @@ bool check_parenteses(int p, int q)
     return stack_pointer == 0;
 }
 
-IntResult eval(int p, int q)
+UintResult eval(int p, int q)
 {
     while (tokens[p].type == TK_NOTYPE)
         p++;
     while (tokens[q].type == TK_NOTYPE)
         q--;
 
-    IntResult ret;
+    UintResult ret;
     if (p > q || p > nr_token || q > nr_token)
         panic("????");
 
     else if (p == q)
     {
-        ret.result = atoi(tokens[p].str);
-        ret.succeeded = true;
+        int succ = sscanf(tokens[p].str, "%u", &ret.result);
+        ret.succeeded = !!succ;
         return ret;
     }
     else if (check_parenteses(p, q))
@@ -247,9 +247,9 @@ IntResult eval(int p, int q)
             return ret;
         }
 
-        IntResult result_l = eval(p, split_pos - 1);
-        IntResult result_r = eval(split_pos + 1, q);
-        IntResult result;
+        UintResult result_l = eval(p, split_pos - 1);
+        UintResult result_r = eval(split_pos + 1, q);
+        UintResult result;
         result.succeeded = result_l.succeeded && result_r.succeeded;
         if (!result.succeeded)
             return result;
@@ -284,9 +284,9 @@ word_t expr(char *e, bool *success)
     }
 
     /* TODO: Insert codes to evaluate the expression. */
-    IntResult result = eval(0, nr_token);
+    UintResult result = eval(0, nr_token);
     if (result.succeeded)
-        printf("eval: %d\n", result.result);
+        printf("eval: %u\n", result.result);
     else
         printf("eval failed.\n");
 
