@@ -212,15 +212,15 @@ UintResult eval(int p, int q)
     {
         int split_pos = -1;
         int stack_pointer = 0;
-        for (int i = p; i <= q; i++)
+        for (int i = q; i >= p; i--)
         {
             // brackets
-            if (tokens[i].type == TK_BRACKET_LEFT)
+            if (tokens[i].type == TK_BRACKET_RIGHT)
             {
                 stack_pointer++;
                 continue;
             }
-            if (tokens[i].type == TK_BRACKET_RIGHT)
+            if (tokens[i].type == TK_BRACKET_LEFT)
             {
                 if (--stack_pointer < 0)
                 {
@@ -235,7 +235,6 @@ UintResult eval(int p, int q)
             if (tokens[i].type == TK_ADD || tokens[i].type == TK_MINUS)
             {
                 split_pos = i;
-                break;
             }
             if (tokens[i].type == TK_MULTIPLY || tokens[i].type == TK_DIV)
                 if (split_pos == -1)

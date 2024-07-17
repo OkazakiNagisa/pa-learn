@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
         fclose(fp);
 
         int ret = system("gcc -Werror /tmp/.code.c -o /tmp/.expr");
-        if (ret != 0)
+        if (ret != 0 || buf_pos >= 31)
         {
             buf_pos = -1;
             tokens = 0;
