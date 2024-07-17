@@ -211,16 +211,17 @@ UintResult eval(int p, int q)
     else
     {
         int split_pos = -1;
+        bool split_pos_is_add_min = false;
         int stack_pointer = 0;
-        for (int i = q; i >= p; i--)
+        for (int i = p; i <= q; i++)
         {
             // brackets
-            if (tokens[i].type == TK_BRACKET_RIGHT)
+            if (tokens[i].type == TK_BRACKET_LEFT)
             {
                 stack_pointer++;
                 continue;
             }
-            if (tokens[i].type == TK_BRACKET_LEFT)
+            if (tokens[i].type == TK_BRACKET_RIGHT)
             {
                 if (--stack_pointer < 0)
                 {
@@ -235,9 +236,10 @@ UintResult eval(int p, int q)
             if (tokens[i].type == TK_ADD || tokens[i].type == TK_MINUS)
             {
                 split_pos = i;
+                split_pos_is_add_min = true;
             }
             if (tokens[i].type == TK_MULTIPLY || tokens[i].type == TK_DIV)
-                if (split_pos == -1)
+                if (!split_pos_is_add_min)
                     split_pos = i;
         }
         if (split_pos == -1)
@@ -248,34 +250,33 @@ UintResult eval(int p, int q)
 
         UintResult result_l = eval(p, split_pos - 1);
         UintResult result_r = eval(split_pos + 1, q);
-        UintResult result;
-        result.succeeded = result_l.succeeded && result_r.succeeded;
-        if (!result.succeeded)
-            return result;
+        ret.succeeded = result_l.succeeded && result_r.succeeded;
+        if (!ret.succeeded)
+            return ret;
 
         switch (tokens[split_pos].type)
         {
         case TK_ADD:
-            result.result = result_l.result + result_r.result;
+            ret.result = result_l.result + result_r.result;
             break;
         case TK_MINUS:
-            result.result = result_l.result - result_r.result;
+            ret.result = result_l.result - result_r.result;
             break;
         case TK_MULTIPLY:
-            result.result = result_l.result * result_r.result;
+            ret.result = result_l.result * result_r.result;
             break;
         case TK_DIV:
             if (result_r.result == 0)
             {
-                result.succeeded = false;
-                return result;
+                ret.succeeded = false;
+                return ret;
             }
-            result.result = result_l.result / result_r.result;
+            ret.result = result_l.result / result_r.result;
             break;
         default:
             panic("???");
         }
-        return result;
+        return ret;
     }
 }
 

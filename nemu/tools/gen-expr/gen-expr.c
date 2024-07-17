@@ -21,6 +21,8 @@
 #include <string.h>
 
 // this should be enough
+static char buf_simplified[65536] = {};
+int buf_simplified_pos = -1;
 static char buf[65536] = {};
 int buf_pos = -1;
 static char code_buf[65536 + 128] = {}; // a little larger than `buf`
@@ -44,6 +46,7 @@ int choose(int limit)
 void gen(char ch)
 {
     buf[++buf_pos] = ch;
+    buf_simplified[++buf_simplified_pos] = ch;
 }
 
 void gen_spaces()
@@ -61,7 +64,9 @@ void gen_num()
 {
     num_generated = 1;
     int a = abs(rand() % 1000000);
-    buf_pos += sprintf(buf + buf_pos + 1, "%d", a);
+    buf_pos += sprintf(buf + buf_pos + 1, "(unsigned)%d", a);
+    buf_simplified_pos +=
+        sprintf(buf_simplified + buf_simplified_pos + 1, "%d", a);
     tokens++;
     gen_spaces();
 }
@@ -138,6 +143,7 @@ int main(int argc, char *argv[])
         gen_rand_expr();
 
         buf[++buf_pos] = '\0';
+        buf_simplified[++buf_simplified_pos] = '\0';
 
         sprintf(code_buf, code_format, buf);
 
@@ -147,9 +153,10 @@ int main(int argc, char *argv[])
         fclose(fp);
 
         int ret = system("gcc -Werror /tmp/.code.c -o /tmp/.expr");
-        if (ret != 0 || buf_pos >= 31)
+        if (ret != 0 || buf_simplified_pos >= 31)
         {
             buf_pos = -1;
+            buf_simplified_pos = -1;
             tokens = 0;
             assert(layers == 0);
 
@@ -164,9 +171,10 @@ int main(int argc, char *argv[])
         ret = fscanf(fp, "%d", &result);
         pclose(fp);
 
-        printf("%u %s\n", result, buf);
+        printf("%u %s\n", result, buf_simplified);
 
         buf_pos = -1;
+        buf_simplified_pos = -1;
         tokens = 0;
         assert(layers == 0);
     }
