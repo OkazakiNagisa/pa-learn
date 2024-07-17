@@ -32,7 +32,10 @@ enum TokenType
     TK_DIV = '/',
     TK_BRACKET_LEFT = '(',
     TK_BRACKET_RIGHT = ')',
-    TK_NUMBER_DEC = '0'
+    TK_NUMBER_DEC = 'd',
+    TK_NUMBER_HEX = 'x',
+    TK_REG = '$',
+    TK_DEREFERENCE = '&',
 };
 
 static struct rule
@@ -52,6 +55,8 @@ static struct rule
     {"\\(", TK_BRACKET_LEFT},
     {"\\)", TK_BRACKET_RIGHT},
     {"[0-9]+", TK_NUMBER_DEC},
+    {"0x[0-9a-fA-F]+", TK_NUMBER_HEX},
+    {"$[0-9a-fA-F]+", TK_REG},
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -104,12 +109,12 @@ static bool make_token(char *e)
             if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 &&
                 pmatch.rm_so == 0)
             {
-                // char *substr_start = e + position;
+                char *substr_start = e + position;
                 int substr_len = pmatch.rm_eo;
 
-                // Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-                //     i, rules[i].regex, position, substr_len, substr_len,
-                //     substr_start);
+                Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
+                    i, rules[i].regex, position, substr_len, substr_len,
+                    substr_start);
 
                 position += substr_len;
 
@@ -137,10 +142,24 @@ static bool make_token(char *e)
                            substr_len);
                     tokens[nr_token].str[substr_len] = 0;
                     break;
+                case TK_NUMBER_HEX:
+                case TK_REG:
+                    if (substr_len >= 32)
+                    {
+                        Log("Token length too long!");
+                        break;
+                    }
+                    memcpy(&tokens[nr_token].str + 1,
+                           &e[position - substr_len + 1], substr_len - 1);
+                    tokens[nr_token].str[substr_len - 1] = 0;
+                    break;
+                case TK_MULTIPLY:
+                    if (nr_token == 0 || 0)
+                        tokens[nr_token].type = TK_DEREFERENCE;
+                    break;
                 case TK_EQ:
                 case TK_ADD:
                 case TK_MINUS:
-                case TK_MULTIPLY:
                 case TK_DIV:
                 case TK_BRACKET_LEFT:
                 case TK_BRACKET_RIGHT:

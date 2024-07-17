@@ -23,17 +23,13 @@ int is_exit_status_bad();
 
 int main(int argc, char *argv[])
 {
+    // debug backdoor
     if (argc == 3 && !strcmp(argv[1], "xx"))
     {
         void init_regex();
         init_regex();
         FILE *f = fopen(argv[2], "r");
         assert(f);
-        // int size = ftell(f);
-        // rewind(f);
-        // char *buf = calloc(1, size);
-        // assert(buf);
-        // fread(buf, size, 1, f);
         uint32_t expected;
         char expression[65536] = {0};
         while (fscanf(f, "%u %[^\n]", &expected, expression) > 0)
