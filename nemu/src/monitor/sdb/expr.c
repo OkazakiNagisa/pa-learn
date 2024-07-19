@@ -19,11 +19,14 @@
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
+#include <memory/paddr.h>
 
 enum TokenType
 {
     TK_NOTYPE = 256,
     TK_EQ = '=',
+    TK_NEQ,
+    TK_AND,
 
     /* TODO: Add more token types */
     TK_ADD = '+',
@@ -47,15 +50,17 @@ static struct rule
      * Pay attention to the precedence level of different rules.
      */
     {" +", TK_NOTYPE}, // spaces
-    {"\\+", '+'},      // plus
     {"==", TK_EQ},     // equal
+    {"!=", TK_NEQ},
+    {"&&", TK_AND},
+    {"\\+", '+'},
     {"-", TK_MINUS},
     {"\\*", TK_MULTIPLY},
     {"/", TK_DIV},
     {"\\(", TK_BRACKET_LEFT},
     {"\\)", TK_BRACKET_RIGHT},
-    {"[0-9]+", TK_NUMBER_DEC},
     {"0x[0-9a-fA-F]+", TK_NUMBER_HEX},
+    {"[0-9]+", TK_NUMBER_DEC},
     {"$[0-9a-fA-F]+", TK_REG},
 };
 
@@ -143,6 +148,15 @@ static bool make_token(char *e)
                     tokens[nr_token].str[substr_len] = 0;
                     break;
                 case TK_NUMBER_HEX:
+                    if (substr_len >= 32)
+                    {
+                        Log("Token length too long!");
+                        break;
+                    }
+                    memcpy(&tokens[nr_token].str + 2,
+                           &e[position - substr_len + 2], substr_len - 2);
+                    tokens[nr_token].str[substr_len - 2] = 0; // TODO
+                    break;
                 case TK_REG:
                     if (substr_len >= 32)
                     {
@@ -154,9 +168,21 @@ static bool make_token(char *e)
                     tokens[nr_token].str[substr_len - 1] = 0;
                     break;
                 case TK_MULTIPLY:
-                    if (nr_token == 0 || 0)
+                {
+                    int prev_token = nr_token - 1;
+                    while (prev_token > 0 &&
+                           tokens[prev_token].type == TK_NOTYPE)
+                        prev_token--;
+                    if (nr_token == 0 || tokens[prev_token].type == TK_ADD ||
+                        tokens[prev_token].type == TK_MINUS ||
+                        tokens[prev_token].type == TK_MULTIPLY ||
+                        tokens[prev_token].type == TK_DIV ||
+                        tokens[prev_token].type == TK_EQ ||
+                        tokens[prev_token].type == TK_NEQ ||
+                        tokens[prev_token].type == TK_AND)
                         tokens[nr_token].type = TK_DEREFERENCE;
                     break;
+                }
                 case TK_EQ:
                 case TK_ADD:
                 case TK_MINUS:
@@ -221,14 +247,41 @@ UintResult eval(int p, int q)
 
     else if (p == q)
     {
-        int succ = sscanf(tokens[p].str, "%u", &ret.result);
-        ret.succeeded = !!succ;
-        return ret;
+        switch (tokens[p].type)
+        {
+        case TK_NUMBER_DEC:
+        {
+            int succ = sscanf(tokens[p].str, "%u", &ret.result);
+            ret.succeeded = succ == 1;
+            return ret;
+            break;
+        }
+        case TK_NUMBER_HEX:
+        {
+            int succ = sscanf(tokens[p].str, "%x", &ret.result);
+            ret.succeeded = succ == 1;
+            return ret;
+            break;
+        }
+        default:
+            panic("????");
+        }
     }
     else if (check_parenteses(p, q))
         return eval(p + 1, q - 1);
     else
     {
+        if (tokens[p].type == TK_DEREFERENCE)
+        {
+            UintResult addr = eval(p + 1, q);
+            if (addr.succeeded)
+            {
+                UintResult ret;
+                ret.succeeded = true;
+                ret.result = *guest_to_host(addr.result);
+                return ret;
+            }
+        }
         int split_pos = -1;
         bool split_pos_is_add_min = false;
         int stack_pointer = 0;
@@ -291,6 +344,15 @@ UintResult eval(int p, int q)
                 return ret;
             }
             ret.result = result_l.result / result_r.result;
+            break;
+        case TK_EQ:
+            ret.result = result_l.result == result_r.result;
+            break;
+        case TK_NEQ:
+            ret.result = result_l.result != result_r.result;
+            break;
+        case TK_AND:
+            ret.result = !!result_l.result && !!result_r.result;
             break;
         default:
             panic("???");
