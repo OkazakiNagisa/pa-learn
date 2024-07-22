@@ -59,9 +59,9 @@ static struct rule
     {"/", TK_DIV},
     {"\\(", TK_BRACKET_LEFT},
     {"\\)", TK_BRACKET_RIGHT},
+    {"\\$[0-9a-z\\$]+", TK_REG},
     {"0x[0-9a-fA-F]+", TK_NUMBER_HEX},
     {"[0-9]+", TK_NUMBER_DEC},
-    {"$[0-9a-fA-F]+", TK_REG},
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -138,6 +138,8 @@ static bool make_token(char *e)
                 switch (rules[i].token_type)
                 {
                 case TK_NUMBER_DEC:
+                case TK_NUMBER_HEX:
+                case TK_REG:
                     if (substr_len >= 32)
                     {
                         Log("Token length too long!");
@@ -146,26 +148,6 @@ static bool make_token(char *e)
                     memcpy(&tokens[nr_token].str, &e[position - substr_len],
                            substr_len);
                     tokens[nr_token].str[substr_len] = 0;
-                    break;
-                case TK_NUMBER_HEX:
-                    if (substr_len >= 32)
-                    {
-                        Log("Token length too long!");
-                        break;
-                    }
-                    memcpy(&tokens[nr_token].str + 2,
-                           &e[position - substr_len + 2], substr_len - 2);
-                    tokens[nr_token].str[substr_len - 2] = 0; // TODO
-                    break;
-                case TK_REG:
-                    if (substr_len >= 32)
-                    {
-                        Log("Token length too long!");
-                        break;
-                    }
-                    memcpy(&tokens[nr_token].str + 1,
-                           &e[position - substr_len + 1], substr_len - 1);
-                    tokens[nr_token].str[substr_len - 1] = 0;
                     break;
                 case TK_MULTIPLY:
                 {
@@ -258,8 +240,14 @@ UintResult eval(int p, int q)
         }
         case TK_NUMBER_HEX:
         {
-            int succ = sscanf(tokens[p].str, "%x", &ret.result);
+            int succ = sscanf(tokens[p].str, "0x%x", &ret.result);
             ret.succeeded = succ == 1;
+            return ret;
+            break;
+        }
+        case TK_REG:
+        {
+            ret.result = isa_reg_str2val(tokens[p].str + 1, &ret.succeeded);
             return ret;
             break;
         }
@@ -277,8 +265,16 @@ UintResult eval(int p, int q)
             if (addr.succeeded)
             {
                 UintResult ret;
-                ret.succeeded = true;
-                ret.result = *guest_to_host(addr.result);
+                if (in_pmem(addr.result))
+                {
+                    ret.succeeded = true;
+                    ret.result = *guest_to_host(addr.result);
+                }
+                else
+                {
+                    ret.succeeded = false;
+                    printf("Mem access out of bound: 0x%x\n", addr.result);
+                }
                 return ret;
             }
         }
