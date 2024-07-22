@@ -216,6 +216,38 @@ bool check_parenteses(int p, int q)
     return stack_pointer == 0;
 }
 
+// bool calc_deference_scope(int p, int *q)
+// {
+//     while (tokens[p].type == TK_NOTYPE)
+//         p++;
+
+//     if (tokens[p].type == TK_NUMBER_DEC || tokens[p].type == TK_NUMBER_HEX)
+//     {
+//         *q = p;
+//         return true;
+//     }
+
+//     if (tokens[p].type == TK_BRACKET_LEFT)
+//     {
+//         int stack_pointer = 1;
+//         p++;
+//         while (stack_pointer > 0)
+//         {
+//             if (tokens[p].type == TK_BRACKET_LEFT)
+//                 stack_pointer++;
+
+//             if (tokens[p].type == TK_BRACKET_RIGHT)
+//                 stack_pointer--;
+
+//             p++;
+//         }
+//         *q = p;
+//         return true;
+//     }
+
+//     return false;
+// }
+
 UintResult eval(int p, int q)
 {
     while (tokens[p].type == TK_NOTYPE)
@@ -246,40 +278,48 @@ UintResult eval(int p, int q)
             break;
         }
         case TK_REG:
-        {
             ret.result = isa_reg_str2val(tokens[p].str + 1, &ret.succeeded);
             return ret;
             break;
-        }
         default:
             panic("????");
         }
     }
     else if (check_parenteses(p, q))
         return eval(p + 1, q - 1);
+    // else if (tokens[p].type == TK_DEREFERENCE)
+    // {
+    //     int q2;
+    //     bool succ = calc_deference_scope(p + 1, &q2);
+    //     if (!succ)
+    //     {
+    //         ret.succeeded = false;
+    //         return ret;
+    //     }
+
+    //     UintResult addr = eval(p + 1, q2);
+    //     if (!addr.succeeded)
+    //     {
+    //         ret.succeeded = false;
+    //         return ret;
+    //     }
+
+    //     if (!in_pmem(addr.result))
+    //     {
+    //         ret.succeeded = false;
+    //         printf("Mem access out of bound: 0x%x\n", addr.result);
+    //         return ret;
+    //     }
+
+    //     ret.succeeded = true;
+    //     ret.result = *guest_to_host(addr.result);
+    //     return ret;
+    // }
     else
     {
-        if (tokens[p].type == TK_DEREFERENCE)
-        {
-            UintResult addr = eval(p + 1, q);
-            if (addr.succeeded)
-            {
-                UintResult ret;
-                if (in_pmem(addr.result))
-                {
-                    ret.succeeded = true;
-                    ret.result = *guest_to_host(addr.result);
-                }
-                else
-                {
-                    ret.succeeded = false;
-                    printf("Mem access out of bound: 0x%x\n", addr.result);
-                }
-                return ret;
-            }
-        }
         int split_pos = -1;
         bool split_pos_is_add_min = false;
+        bool split_pos_is_mul_div = false;
         int stack_pointer = 0;
         for (int i = p; i <= q; i++)
         {
@@ -308,9 +348,43 @@ UintResult eval(int p, int q)
             }
             if (tokens[i].type == TK_MULTIPLY || tokens[i].type == TK_DIV)
                 if (!split_pos_is_add_min)
+                {
+                    split_pos = i;
+                    split_pos_is_mul_div = true;
+                }
+
+            if (tokens[i].type == TK_DEREFERENCE)
+                if (!split_pos_is_add_min && !split_pos_is_mul_div)
                     split_pos = i;
         }
         if (split_pos == -1)
+        {
+            ret.succeeded = false;
+            return ret;
+        }
+
+        if (tokens[split_pos].type == TK_DEREFERENCE)
+        {
+            UintResult addr = eval(split_pos + 1, q);
+            if (!addr.succeeded)
+            {
+                ret.succeeded = false;
+                return ret;
+            }
+
+            if (!in_pmem(addr.result))
+            {
+                ret.succeeded = false;
+                printf("Mem access out of bound: 0x%x\n", addr.result);
+                return ret;
+            }
+
+            ret.succeeded = true;
+            ret.result = *(word_t *)guest_to_host(addr.result);
+            return ret;
+        }
+
+        if (split_pos == p || split_pos == q)
         {
             ret.succeeded = false;
             return ret;
@@ -320,7 +394,10 @@ UintResult eval(int p, int q)
         UintResult result_r = eval(split_pos + 1, q);
         ret.succeeded = result_l.succeeded && result_r.succeeded;
         if (!ret.succeeded)
+        {
+            printf("operator spliting failed\n");
             return ret;
+        }
 
         switch (tokens[split_pos].type)
         {
@@ -337,6 +414,7 @@ UintResult eval(int p, int q)
             if (result_r.result == 0)
             {
                 ret.succeeded = false;
+                printf("zero as divisor\n");
                 return ret;
             }
             ret.result = result_l.result / result_r.result;
@@ -351,7 +429,7 @@ UintResult eval(int p, int q)
             ret.result = !!result_l.result && !!result_r.result;
             break;
         default:
-            panic("???");
+            panic("unexpected token");
         }
         return ret;
     }
