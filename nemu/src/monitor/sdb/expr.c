@@ -216,38 +216,6 @@ bool check_parenteses(int p, int q)
     return stack_pointer == 0;
 }
 
-// bool calc_deference_scope(int p, int *q)
-// {
-//     while (tokens[p].type == TK_NOTYPE)
-//         p++;
-
-//     if (tokens[p].type == TK_NUMBER_DEC || tokens[p].type == TK_NUMBER_HEX)
-//     {
-//         *q = p;
-//         return true;
-//     }
-
-//     if (tokens[p].type == TK_BRACKET_LEFT)
-//     {
-//         int stack_pointer = 1;
-//         p++;
-//         while (stack_pointer > 0)
-//         {
-//             if (tokens[p].type == TK_BRACKET_LEFT)
-//                 stack_pointer++;
-
-//             if (tokens[p].type == TK_BRACKET_RIGHT)
-//                 stack_pointer--;
-
-//             p++;
-//         }
-//         *q = p;
-//         return true;
-//     }
-
-//     return false;
-// }
-
 UintResult eval(int p, int q)
 {
     while (tokens[p].type == TK_NOTYPE)
@@ -287,37 +255,10 @@ UintResult eval(int p, int q)
     }
     else if (check_parenteses(p, q))
         return eval(p + 1, q - 1);
-    // else if (tokens[p].type == TK_DEREFERENCE)
-    // {
-    //     int q2;
-    //     bool succ = calc_deference_scope(p + 1, &q2);
-    //     if (!succ)
-    //     {
-    //         ret.succeeded = false;
-    //         return ret;
-    //     }
-
-    //     UintResult addr = eval(p + 1, q2);
-    //     if (!addr.succeeded)
-    //     {
-    //         ret.succeeded = false;
-    //         return ret;
-    //     }
-
-    //     if (!in_pmem(addr.result))
-    //     {
-    //         ret.succeeded = false;
-    //         printf("Mem access out of bound: 0x%x\n", addr.result);
-    //         return ret;
-    //     }
-
-    //     ret.succeeded = true;
-    //     ret.result = *guest_to_host(addr.result);
-    //     return ret;
-    // }
     else
     {
         int split_pos = -1;
+        bool split_pos_is_comparators = false;
         bool split_pos_is_add_min = false;
         bool split_pos_is_mul_div = false;
         int stack_pointer = 0;
@@ -341,20 +282,28 @@ UintResult eval(int p, int q)
             if (stack_pointer)
                 continue;
 
-            if (tokens[i].type == TK_ADD || tokens[i].type == TK_MINUS)
+            if (tokens[i].type == TK_EQ || tokens[i].type == TK_NEQ ||
+                tokens[i].type == TK_AND)
             {
                 split_pos = i;
-                split_pos_is_add_min = true;
+                split_pos_is_comparators = true;
             }
+            if (tokens[i].type == TK_ADD || tokens[i].type == TK_MINUS)
+                if (!split_pos_is_comparators)
+                {
+                    split_pos = i;
+                    split_pos_is_add_min = true;
+                }
             if (tokens[i].type == TK_MULTIPLY || tokens[i].type == TK_DIV)
-                if (!split_pos_is_add_min)
+                if (!split_pos_is_comparators && !split_pos_is_add_min)
                 {
                     split_pos = i;
                     split_pos_is_mul_div = true;
                 }
 
             if (tokens[i].type == TK_DEREFERENCE)
-                if (!split_pos_is_add_min && !split_pos_is_mul_div)
+                if (!split_pos_is_comparators && !split_pos_is_add_min &&
+                    !split_pos_is_mul_div)
                     split_pos = i;
         }
         if (split_pos == -1)
