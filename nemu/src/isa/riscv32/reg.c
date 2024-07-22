@@ -36,6 +36,11 @@ word_t isa_reg_str2val(const char *s, bool *success)
         *success = false;
         return 0;
     }
+    if (!strcmp(s, "pc"))
+    {
+        *success = true;
+        return cpu.pc;
+    }
     for (int i = 0; i < ARRLEN(regs); i++)
     {
         if (!strcmp(s, regs[i]))

@@ -113,7 +113,12 @@ bool traverse_watchpoints()
     {
         word_t previous_result = cur->result;
         cur->result = expr(cur->expr, &cur->result_succeeded);
-        ret |= previous_result != cur->result;
+        if (previous_result != cur->result)
+        {
+            ret |= previous_result != cur->result;
+            printf("Watchpoint #%d hit! %s = %u (prev %u)\n", cur->NO,
+                   cur->expr, cur->result, previous_result);
+        }
         cur = cur->next;
     }
     return ret;

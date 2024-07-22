@@ -139,7 +139,7 @@ int cmd_p(char *args)
     bool succeeded;
     word_t result = expr(args, &succeeded);
     if (succeeded)
-        printf("eval: %u\n", result);
+        printf("eval: %u (0x%x)\n", result, result);
     else
         printf("eval failed.\n");
     return 0;
