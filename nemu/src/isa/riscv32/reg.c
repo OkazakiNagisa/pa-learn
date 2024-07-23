@@ -25,7 +25,7 @@ void isa_reg_display()
 {
     for (int i = 0; i < 32; i++)
     {
-        printf("%3s: 0x%-8x\t%c", regs[i], cpu.gpr[i],
+        printf("%3s: 0x%.8x  %c", regs[i], cpu.gpr[i],
                "\n "[!!((i + 1) % 4)]);
     }
 }
