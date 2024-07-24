@@ -36,7 +36,7 @@
             "stopAtEntry": false,
             "program": "${workspaceFolder}/nemu/build/riscv32-nemu-interpreter",
             "args": [
-                "../../am-kernels/tests/cpu-tests/build/dummy-riscv32-nemu.bin"
+                "../../am-kernels/tests/cpu-tests/build/add-riscv32-nemu.bin"
             ],
             "cwd": "${workspaceFolder}/nemu/build",
             "environment": [],
