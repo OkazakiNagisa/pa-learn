@@ -1,0 +1,14 @@
+{
+	"files": [
+		{
+			"path": "nemu/src/isa/riscv32/init.c",
+			"bookmarks": [
+				{
+					"line": 20,
+					"column": 32,
+					"label": ""
+				}
+			]
+		}
+	]
+}
