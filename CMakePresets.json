@@ -8,24 +8,8 @@
             "binaryDir": "${sourceDir}/build",
             "installDir": "${sourceDir}/build/install",
             "cacheVariables": {
-                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
-            }
-        },
-        {
-            "name": "cxxscaffold.out-of-source-tree",
-            "description": "need to be prior than `base` to prevent covering",
-            "hidden": true,
-            "binaryDir": "${sourceParentDir}/build",
-            "installDir": "${sourceParentDir}/build/install",
-            "cacheVariables": {
-                "CxxScaffold_OutOfSourceTree": "ON"
-            }
-        },
-        {
-            "name": "cxxscaffold.genasm",
-            "hidden": true,
-            "cacheVariables": {
-                "CxxScaffold_QuickTarget_GenAsm": "ON"
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
             }
         },
         {
