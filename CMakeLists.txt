@@ -20,5 +20,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     SDL2::SDL2main
 )
 target_sources(${PROJECT_NAME} PRIVATE
-    src/main.cpp
+    src/main.cc
 )
