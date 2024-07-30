@@ -28,7 +28,8 @@
             "hidden": true,
             "inherits": [
                 "base",
-                "arch.x86.64"
+                "arch.x86.64",
+                "use-vcpkg"
             ],
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
