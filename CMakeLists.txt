@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.23)
 project("PAx")
 
-find_package(SDL2 CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+find_package(glad CONFIG REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 
 add_library(dbg_macro INTERFACE)
@@ -14,11 +16,12 @@ set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 23)
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
 target_link_libraries(${PROJECT_NAME} PRIVATE
     dbg_macro
-    opengl32.lib
+    spdlog::spdlog
+    glad::glad
+    glfw
     imgui::imgui
-    SDL2::SDL2
-    SDL2::SDL2main
 )
 target_sources(${PROJECT_NAME} PRIVATE
     src/main.cc
 )
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)

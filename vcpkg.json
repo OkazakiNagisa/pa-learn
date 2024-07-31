@@ -1,14 +1,22 @@
 {
   "dependencies": [
     "dbg-macro",
-    "sdl2",
+    {
+      "name": "glad",
+      "features": [
+        "gl-api-latest"
+      ]
+    },
+    "glfw3",
     {
       "name": "imgui",
       "features": [
-        "sdl2-binding",
+        "docking-experimental",
+        "glfw-binding",
         "opengl3-binding",
-        "docking-experimental"
+        "sdl2-binding"
       ]
-    }
+    },
+    "spdlog"
   ]
 }
