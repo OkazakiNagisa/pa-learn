@@ -4,11 +4,13 @@
 #include <imgui_impl_opengl3.h>
 #include "GlWindow.hpp"
 #include "ImGuiFrameContent/Main.hpp"
+#include "ImGuiFrameContent/DebugHud.hpp"
 
 namespace Glx
 {
 namespace ImGuiBase
 {
+
 inline void Initialize()
 {
     // Setup Dear ImGui context
@@ -51,6 +53,7 @@ inline void PreTick()
 inline void Tick()
 {
     ImGuiFrameContent::Main::Tick();
+    ImGuiFrameContent::DebugHud::Tick();
 }
 
 inline void PostTick()
@@ -72,5 +75,5 @@ inline void PostTick()
     }
 }
 
-} // namespace ImGuiFrame
+} // namespace ImGuiBase
 } // namespace Glx

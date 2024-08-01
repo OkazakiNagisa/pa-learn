@@ -6,9 +6,6 @@ namespace Glx::ImGuiFrameContent
 {
 namespace Main
 {
-inline void Initialize() {}
-
-inline void Finalize() {}
 
 inline void Tick()
 {
@@ -60,5 +57,5 @@ inline void Tick()
     }
 }
 
-} // namespace ImGuiFrames::Main
-} // namespace Glx
+} // namespace Main
+} // namespace Glx::ImGuiFrameContent

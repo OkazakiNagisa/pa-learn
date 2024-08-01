@@ -10,6 +10,7 @@ namespace Glx
 namespace GlWindow
 {
 inline GLFWwindow *GlfwWindowPtr;
+inline bool VsyncEnabled = false;
 inline int Width = 800;
 inline int Height = 600;
 inline std::string Title = "Demo";
@@ -41,7 +42,10 @@ inline int Initialize()
         return -1;
     }
     glfwMakeContextCurrent(GlfwWindowPtr);
-    glfwSwapInterval(1); // Enable vsync
+    if (VsyncEnabled)
+        glfwSwapInterval(1);
+    else
+        glfwSwapInterval(0);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
