@@ -1,13 +1,11 @@
 #pragma once
-#include <Glx/Interfaces/Singleton.h>
 #include <Glx/Interfaces/Initializable.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace Glx
 {
-class Logger : public Interfaces::Singleton<Logger>,
-               public Interfaces::Initializable<Logger>
+class Logging : public virtual Interfaces::Virtual::Initializable
 {
 public:
     auto GetLogger()
@@ -15,17 +13,23 @@ public:
         return Logger;
     }
 
-private:
-    std::shared_ptr<spdlog::logger> Logger;
+    const int InitOrder = 0;
 
-    void Initialize()
+    void Initialize() override
     {
+        if (Initialized)
+            return;
         spdlog::set_pattern("[%H:%M:%S.%e %^%L%$] %v");
         spdlog::set_level(spdlog::level::info);
 
         Logger = spdlog::stdout_color_mt("Logger");
         Logger->set_pattern("[%H:%M:%S.%e %^%L%$] [%n] %v");
+        Initialized = true;
     }
-    void Finalize() {}
+    void Finalize() override {}
+
+private:
+    std::shared_ptr<spdlog::logger> Logger;
 };
+static_assert(Interfaces::Concept::Initializable<class Logging>, "???");
 } // namespace Glx

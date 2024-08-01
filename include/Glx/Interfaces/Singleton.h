@@ -2,6 +2,8 @@
 
 namespace Interfaces
 {
+namespace Crtp
+{
 template <class T>
 class Singleton
 {
@@ -21,4 +23,5 @@ private:
     Singleton &operator=(const Singleton &) = delete;
     Singleton &operator=(Singleton &&) = delete;
 };
+} // namespace Crtp
 } // namespace Interfaces
