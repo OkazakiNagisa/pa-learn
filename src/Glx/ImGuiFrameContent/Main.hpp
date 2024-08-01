@@ -15,6 +15,9 @@ inline void Tick()
     static float f = 0.0f;
     static int counter = 0;
 
+    if (show_demo_window)
+        ImGui::ShowDemoWindow(&show_demo_window);
+
     ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and
                                    // append into it.
 
