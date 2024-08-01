@@ -1,32 +1,52 @@
 #pragma once
-#include <Glx/Interfaces/Singleton.h>
-#include <Glx/Interfaces/Initializable.h>
+#include "Logging.hpp"
+#include "GlWindow.hpp"
+#include "ImGuiFrame.hpp"
 
 namespace Glx
 {
-class TickEngine : public Interfaces::Crtp::Singleton<TickEngine>
+namespace TickEngine
 {
-public:
-    void DoMainLoop()
-    {
-        Initialize();
-        while (ShouldQuit)
-        {
-            Tick();
-        }
-        Finalize();
-    }
-    void Tick() {}
+inline int Initialize()
+{
+    Logging::Initialize();
+    if (!!GlWindow::Initialize())
+        return -1;
+    ImGuiFrame::Initialize();
 
-    void Initialize()
-    {
-        Initialized = true;
-    }
-    void Finalize() {}
+    return 0;
+}
 
-private:
-    bool Initialized = false;
-    bool ShouldQuit = false;
-};
-static_assert(Interfaces::Concept::Initializable<TickEngine>, "???");
+inline void PreTick()
+{
+    GlWindow::PreTick();
+    ImGuiFrame::PreTick();
+}
+
+inline void Tick() {}
+
+inline void PostTick()
+{
+    ImGuiFrame::PostTick();
+}
+
+inline void Finalize()
+{
+    ImGuiFrame::Finalize();
+    GlWindow::Finalize();
+    Logging::Finalize();
+}
+
+inline void Run()
+{
+    Initialize();
+    while (!glfwWindowShouldClose(GlWindow::GlfwWindowPtr))
+    {
+        PreTick();
+        Tick();
+        PostTick();
+    }
+    Finalize();
+}
+} // namespace TickEngine
 } // namespace Glx

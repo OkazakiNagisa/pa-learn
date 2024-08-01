@@ -1,73 +1,71 @@
 #pragma once
+#include <string>
 #include <spdlog/spdlog.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <Glx/Interfaces/Initializable.h>
-#include <Glx/Interfaces/Tickable.h>
 
 namespace Glx
 {
-class GlWindow : public virtual Interfaces::Virtual::Initializable,
-                 public virtual Interfaces::Virtual::Tickable
+namespace GlWindow
 {
-public:
-    const int InitOrder = 1;
+inline GLFWwindow *GlfwWindowPtr;
+inline int Width = 800;
+inline int Height = 600;
+inline std::string Title = "Demo";
 
-    void Initialize() override
+inline int Initialize()
+{
+    glfwSetErrorCallback([](int error, const char *description) {
+        spdlog::error("GLFW Error {}: {}", error, description);
+    });
+    if (!glfwInit())
     {
-        if (Initialized)
-            return;
-
-        glfwSetErrorCallback([](int error, const char *description) {
-            spdlog::error("GLFW Error {}: {}", error, description);
-        });
-        if (!glfwInit())
-        {
-            spdlog::error("glfwInit Error!");
-            return;
-        }
-
-        // GL 3.0 + GLSL 130
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-        // Create window with graphics context
-        window = glfwCreateWindow(Width, Height, "Dear ImGui GLFW+OpenGL3 example",
-                                  nullptr, nullptr);
-        if (window == nullptr)
-        {
-            spdlog::error("glfwCreateWindow Error!");
-            glfwTerminate();
-            return;
-        }
-        glfwMakeContextCurrent(window);
-        glfwSwapInterval(1); // Enable vsync
-
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-        {
-            spdlog::error("gladLoadGLLoader failed");
-            glfwDestroyWindow(window);
-            glfwTerminate();
-            return;
-        }
-
-        Initialized = true;
+        spdlog::error("glfwInit Error!");
+        return -1;
     }
-    void Finalize() override
+
+    // GL 3.0 + GLSL 130
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    // Create window with graphics context
+    GlfwWindowPtr =
+        glfwCreateWindow(Width, Height, Title.c_str(), nullptr, nullptr);
+    if (GlfwWindowPtr == nullptr)
     {
-        glfwDestroyWindow(window);
+        spdlog::error("glfwCreateWindow Error!");
         glfwTerminate();
+        return -1;
     }
+    glfwMakeContextCurrent(GlfwWindowPtr);
+    glfwSwapInterval(1); // Enable vsync
 
-    GLFWwindow *GetWindow()
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        return window;
+        spdlog::error("gladLoadGLLoader failed");
+        glfwDestroyWindow(GlfwWindowPtr);
+        glfwTerminate();
+        return -1;
     }
 
-private:
-    GLFWwindow *window;
-    int Width = 800;
-    int Height = 600;
-};
+    return 0;
+}
+
+void Finalize()
+{
+    glfwDestroyWindow(GlfwWindowPtr);
+    glfwTerminate();
+}
+
+inline void PreTick()
+{
+    glfwPollEvents();
+    glfwGetFramebufferSize(GlfwWindowPtr, &Width, &Height);
+    glViewport(0, 0, Width, Height);
+    glClearColor(0.f, 0.f, 0.f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+} // namespace GlWindow
 } // namespace Glx
