@@ -1,7 +1,7 @@
 #pragma once
 #include "Logging.hpp"
 #include "GlWindow.hpp"
-#include "ImGuiFrame.hpp"
+#include "ImGuiBase.hpp"
 
 namespace Glx
 {
@@ -12,7 +12,7 @@ inline int Initialize()
     Logging::Initialize();
     if (!!GlWindow::Initialize())
         return -1;
-    ImGuiFrame::Initialize();
+    ImGuiBase::Initialize();
 
     return 0;
 }
@@ -20,19 +20,23 @@ inline int Initialize()
 inline void PreTick()
 {
     GlWindow::PreTick();
-    ImGuiFrame::PreTick();
+    ImGuiBase::PreTick();
 }
 
-inline void Tick() {}
+inline void Tick()
+{
+    ImGuiBase::Tick();
+}
 
 inline void PostTick()
 {
-    ImGuiFrame::PostTick();
+    ImGuiBase::PostTick();
+    GlWindow::PostTick();
 }
 
 inline void Finalize()
 {
-    ImGuiFrame::Finalize();
+    ImGuiBase::Finalize();
     GlWindow::Finalize();
     Logging::Finalize();
 }

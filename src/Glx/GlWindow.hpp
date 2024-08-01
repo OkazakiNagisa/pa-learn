@@ -3,6 +3,7 @@
 #include <spdlog/spdlog.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <imgui.h>
 
 namespace Glx
 {
@@ -12,6 +13,7 @@ inline GLFWwindow *GlfwWindowPtr;
 inline int Width = 800;
 inline int Height = 600;
 inline std::string Title = "Demo";
+inline ImVec4 BackgroundColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 inline int Initialize()
 {
@@ -63,8 +65,15 @@ inline void PreTick()
     glfwPollEvents();
     glfwGetFramebufferSize(GlfwWindowPtr, &Width, &Height);
     glViewport(0, 0, Width, Height);
-    glClearColor(0.f, 0.f, 0.f, 1.f);
+    glClearColor(BackgroundColor.x * BackgroundColor.w,
+                 BackgroundColor.y * BackgroundColor.w,
+                 BackgroundColor.z * BackgroundColor.w, BackgroundColor.w);
     glClear(GL_COLOR_BUFFER_BIT);
+}
+
+inline void PostTick()
+{
+    glfwSwapBuffers(GlfwWindowPtr);
 }
 
 } // namespace GlWindow

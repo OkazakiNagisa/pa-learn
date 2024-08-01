@@ -3,10 +3,11 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include "GlWindow.hpp"
+#include "ImGuiFrames/Main.hpp"
 
 namespace Glx
 {
-namespace ImGuiFrame
+namespace ImGuiBase
 {
 inline void Initialize()
 {
@@ -47,10 +48,28 @@ inline void PreTick()
     ImGui::NewFrame();
 }
 
+inline void Tick()
+{
+    ImGuiFrames::Main::Tick();
+}
+
 inline void PostTick()
 {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    // Update and Render additional Platform Windows
+    // (Platform functions may change the current OpenGL context, so we
+    // save/restore it to make it easier to paste this code elsewhere.
+    //  For this specific demo app we could also call
+    //  glfwMakeContextCurrent(window) directly)
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        GLFWwindow *backup_current_context = glfwGetCurrentContext();
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backup_current_context);
+    }
 }
 
 } // namespace ImGuiFrame
