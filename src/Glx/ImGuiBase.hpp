@@ -3,7 +3,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include "GlWindow.hpp"
-#include "ImGuiFrames/Main.hpp"
+#include "ImGuiFrameContent/Main.hpp"
 
 namespace Glx
 {
@@ -50,7 +50,7 @@ inline void PreTick()
 
 inline void Tick()
 {
-    ImGuiFrames::Main::Tick();
+    ImGuiFrameContent::Main::Tick();
 }
 
 inline void PostTick()

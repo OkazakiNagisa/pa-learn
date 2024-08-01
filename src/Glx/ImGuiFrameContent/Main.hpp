@@ -2,9 +2,9 @@
 #include <imgui.h>
 #include "../GlWindow.hpp"
 
-namespace Glx
+namespace Glx::ImGuiFrameContent
 {
-namespace ImGuiFrames::Main
+namespace Main
 {
 inline void Initialize() {}
 
@@ -32,7 +32,8 @@ inline void Tick()
                        1.0f); // Edit 1 float using a slider from 0.0f to 1.0f
     ImGui::ColorEdit3(
         "clear color",
-        (float *)&GlWindow::BackgroundColor); // Edit 3 floats representing a color
+        (float *)&GlWindow::BackgroundColor); // Edit 3 floats representing a
+                                              // color
 
     if (ImGui::Button("Button")) // Buttons return true when clicked (most
                                  // widgets return true when edited/activated)
