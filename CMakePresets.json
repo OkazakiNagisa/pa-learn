@@ -12,11 +12,6 @@
             }
         },
         {
-            "name": "use-vcpkg",
-            "hidden": true,
-            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-        },
-        {
             "name": "arch.x86.32",
             "hidden": true,
             "architecture": {
@@ -70,6 +65,11 @@
                 "CMAKE_C_COMPILER": "clang",
                 "CMAKE_CXX_COMPILER": "clang++"
             }
+        },
+        {
+            "name": "vcpkg.enable",
+            "hidden": true,
+            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
         },
         {
             "name": "toolchain.ewdk.22621",

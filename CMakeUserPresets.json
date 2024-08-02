@@ -29,7 +29,7 @@
             "inherits": [
                 "base",
                 "arch.x86.64",
-                "use-vcpkg"
+                "vcpkg.enable"
             ],
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
