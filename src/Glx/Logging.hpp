@@ -6,6 +6,7 @@ namespace Glx
 {
 namespace Logging
 {
+
 inline std::shared_ptr<spdlog::logger> Logger;
 
 inline void Initialize()

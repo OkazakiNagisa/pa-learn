@@ -8,7 +8,7 @@
 
 namespace Glx
 {
-namespace ImGuiBase
+namespace ImGuiBaseFrame
 {
 
 inline void Initialize()
@@ -35,12 +35,6 @@ inline void Initialize()
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(Glx::GlWindow::GlfwWindowPtr, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
-}
-inline void Finalize()
-{
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
 }
 
 inline void PreTick()
@@ -73,6 +67,13 @@ inline void PostTick()
         ImGui::RenderPlatformWindowsDefault();
         glfwMakeContextCurrent(backup_current_context);
     }
+}
+
+inline void Finalize()
+{
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 }
 
 } // namespace ImGuiBase

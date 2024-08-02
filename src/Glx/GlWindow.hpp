@@ -9,6 +9,7 @@ namespace Glx
 {
 namespace GlWindow
 {
+
 inline GLFWwindow *GlfwWindowPtr;
 inline bool VsyncEnabled = false;
 inline int Width = 800;
@@ -58,12 +59,6 @@ inline int Initialize()
     return 0;
 }
 
-void Finalize()
-{
-    glfwDestroyWindow(GlfwWindowPtr);
-    glfwTerminate();
-}
-
 inline void PreTick()
 {
     glfwPollEvents();
@@ -78,6 +73,12 @@ inline void PreTick()
 inline void PostTick()
 {
     glfwSwapBuffers(GlfwWindowPtr);
+}
+
+void Finalize()
+{
+    glfwDestroyWindow(GlfwWindowPtr);
+    glfwTerminate();
 }
 
 } // namespace GlWindow

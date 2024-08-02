@@ -1,18 +1,19 @@
 #pragma once
 #include "Logging.hpp"
 #include "GlWindow.hpp"
-#include "ImGuiBase.hpp"
+#include "ImGuiBaseFrame.hpp"
 
 namespace Glx
 {
 namespace TickEngine
 {
+
 inline int Initialize()
 {
     Logging::Initialize();
     if (!!GlWindow::Initialize())
         return -1;
-    ImGuiBase::Initialize();
+    ImGuiBaseFrame::Initialize();
 
     return 0;
 }
@@ -20,23 +21,23 @@ inline int Initialize()
 inline void PreTick()
 {
     GlWindow::PreTick();
-    ImGuiBase::PreTick();
+    ImGuiBaseFrame::PreTick();
 }
 
 inline void Tick()
 {
-    ImGuiBase::Tick();
+    ImGuiBaseFrame::Tick();
 }
 
 inline void PostTick()
 {
-    ImGuiBase::PostTick();
+    ImGuiBaseFrame::PostTick();
     GlWindow::PostTick();
 }
 
 inline void Finalize()
 {
-    ImGuiBase::Finalize();
+    ImGuiBaseFrame::Finalize();
     GlWindow::Finalize();
     Logging::Finalize();
 }
@@ -52,5 +53,6 @@ inline void Run()
     }
     Finalize();
 }
+
 } // namespace TickEngine
 } // namespace Glx
