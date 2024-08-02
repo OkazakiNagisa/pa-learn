@@ -29,6 +29,7 @@
             "inherits": [
                 "base",
                 "arch.x86.64",
+                "toolchain.ewdk.22621",
                 "use-vcpkg"
             ],
             "cacheVariables": {
