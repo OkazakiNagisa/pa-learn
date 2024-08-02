@@ -14,9 +14,7 @@
         {
             "name": "use-vcpkg",
             "hidden": true,
-            "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-            }
+            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
         },
         {
             "name": "arch.x86.32",
@@ -30,7 +28,7 @@
                 "strategy": "external"
             },
             "environment": {
-                "VSCMD_ARG_TGT_ARCH": "x86"
+                "CmakeWindowsToolchain_EwdkTargetArch": "x86"
             }
         },
         {
@@ -45,7 +43,7 @@
                 "strategy": "external"
             },
             "environment": {
-                "VSCMD_ARG_TGT_ARCH": "x64"
+                "CmakeWindowsToolchain_EwdkTargetArch": "x64"
             }
         },
         {
@@ -80,19 +78,27 @@
                 "toolchain.ewdk.base"
             ],
             "environment": {
-                "BuildLabSetupRoot": "E:",
-                "VCToolsVersion": "14.31.31103",
-                "Version_Number": "10.0.22621.0"
+                "CmakeWindowsToolchain_EwdkRoot": "E:",
+                "CmakeWindowsToolchain_EwdkVsVer": "2022",
+                "CmakeWindowsToolchain_EwdkMsvcVer": "14.31.31103",
+                "CmakeWindowsToolchain_EwdkWinSdkVer": "10.0.22621.0"
             }
         },
         {
             "name": "toolchain.ewdk.base",
             "hidden": true,
             "toolchainFile": "${sourceDir}/cmake/toolchains/WindowsToolchain/Windows.EWDK.toolchain.cmake",
+            "cacheVariables": {
+                "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchains/WindowsToolchain/Windows.EWDK.toolchain.cmake"
+            },
             "environment": {
+                "BuildLabSetupRoot": "$env{CmakeWindowsToolchain_EwdkRoot}",
                 "VSCMD_ARG_HOST_ARCH": "x64",
-                "VSINSTALLDIR": "$env{BuildLabSetupRoot}\\Program Files\\Microsoft Visual Studio\\2022\\BuildTools\\",
-                "WindowsSdkDir": "$env{BuildLabSetupRoot}\\Program Files\\Windows Kits\\10\\"
+                "VSCMD_ARG_TGT_ARCH": "$env{CmakeWindowsToolchain_EwdkTargetArch}",
+                "VSINSTALLDIR": "$env{BuildLabSetupRoot}\\Program Files\\Microsoft Visual Studio\\$env{CmakeWindowsToolchain_EwdkVsVer}\\BuildTools\\",
+                "VCToolsVersion": "$env{CmakeWindowsToolchain_EwdkMsvcVer}",
+                "WindowsSdkDir": "$env{BuildLabSetupRoot}\\Program Files\\Windows Kits\\10\\",
+                "Version_Number": "$env{CmakeWindowsToolchain_EwdkWinSdkVer}"
             }
         }
     ]

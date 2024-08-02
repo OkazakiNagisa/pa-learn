@@ -29,8 +29,8 @@
             "inherits": [
                 "base",
                 "arch.x86.64",
-                "toolchain.ewdk.22621",
-                "use-vcpkg"
+                "use-vcpkg",
+                "toolchain.ewdk.22621"
             ],
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
