@@ -5,6 +5,8 @@ find_package(spdlog CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
+# find_package(Readline REQUIRED)
+# find_package(LLVM CONFIG REQUIRED)
 
 add_library(dbg_macro INTERFACE)
 find_path(DBG_MACRO_INCLUDE_DIRS "dbg.h")
