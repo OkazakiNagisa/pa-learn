@@ -3,14 +3,6 @@
 
 int main(int argc, char *argv[])
 {
-    class A
-    {
-    public:
-        A() = default;
-        A(int) {}
-    };
-    Singleton::Get<A>();
-    Singleton::Get<A>(1);
-    Glx::TickEngine::Run();
+    Singleton::Get<Glx::TickEngine>().Run();
     return 0;
 }

@@ -2,7 +2,6 @@
 
 namespace LiteEmu
 {
-
 class Monitor
 {
 public:
@@ -11,5 +10,4 @@ public:
         return 0;
     }
 };
-
 } // namespace LiteEmu

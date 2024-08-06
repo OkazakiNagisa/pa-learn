@@ -4,20 +4,20 @@
 
 namespace Glx
 {
-namespace Logging
+class Logging
 {
+public:
+    std::shared_ptr<spdlog::logger> Logger;
 
-inline std::shared_ptr<spdlog::logger> Logger;
+    void Initialize()
+    {
+        spdlog::set_pattern("[%H:%M:%S.%e %^%L%$] %v");
+        spdlog::set_level(spdlog::level::info);
 
-inline void Initialize()
-{
-    spdlog::set_pattern("[%H:%M:%S.%e %^%L%$] %v");
-    spdlog::set_level(spdlog::level::info);
+        Logger = spdlog::stdout_color_mt("Logger");
+        Logger->set_pattern("[%H:%M:%S.%e %^%L%$] [%n] %v");
+    }
 
-    Logger = spdlog::stdout_color_mt("Logger");
-    Logger->set_pattern("[%H:%M:%S.%e %^%L%$] [%n] %v");
-}
-inline void Finalize() {}
-
-} // namespace Logging
+    void Finalize() {}
+};
 } // namespace Glx

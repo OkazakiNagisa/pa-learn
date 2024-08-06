@@ -1,58 +1,58 @@
 #pragma once
+#include <Singleton.hh>
 #include "Logging.hpp"
 #include "GlWindow.hpp"
 #include "ImGuiBaseFrame.hpp"
 
 namespace Glx
 {
-namespace TickEngine
+class TickEngine
 {
-
-inline int Initialize()
-{
-    Logging::Initialize();
-    if (!!GlWindow::Initialize())
-        return -1;
-    ImGuiBaseFrame::Initialize();
-
-    return 0;
-}
-
-inline void PreTick()
-{
-    GlWindow::PreTick();
-    ImGuiBaseFrame::PreTick();
-}
-
-inline void Tick()
-{
-    ImGuiBaseFrame::Tick();
-}
-
-inline void PostTick()
-{
-    ImGuiBaseFrame::PostTick();
-    GlWindow::PostTick();
-}
-
-inline void Finalize()
-{
-    ImGuiBaseFrame::Finalize();
-    GlWindow::Finalize();
-    Logging::Finalize();
-}
-
-inline void Run()
-{
-    Initialize();
-    while (!glfwWindowShouldClose(GlWindow::GlfwWindowPtr))
+public:
+    int Initialize()
     {
-        PreTick();
-        Tick();
-        PostTick();
-    }
-    Finalize();
-}
+        Singleton::Get<Logging>().Initialize();
+        if (!!Singleton::Get<GlWindow>().Initialize())
+            return -1;
+        Singleton::Get<ImGuiBaseFrame>().Initialize();
 
-} // namespace TickEngine
+        return 0;
+    }
+
+    void PreTick()
+    {
+        Singleton::Get<GlWindow>().PreTick();
+        Singleton::Get<ImGuiBaseFrame>().PreTick();
+    }
+
+    void Tick()
+    {
+        Singleton::Get<ImGuiBaseFrame>().Tick();
+    }
+
+    void PostTick()
+    {
+        Singleton::Get<ImGuiBaseFrame>().PostTick();
+        Singleton::Get<GlWindow>().PostTick();
+    }
+
+    void Finalize()
+    {
+        Singleton::Get<ImGuiBaseFrame>().Finalize();
+        Singleton::Get<GlWindow>().Finalize();
+        Singleton::Get<Logging>().Finalize();
+    }
+
+    void Run()
+    {
+        Initialize();
+        while (!glfwWindowShouldClose(Singleton::Get<GlWindow>().GlfwWindowPtr))
+        {
+            PreTick();
+            Tick();
+            PostTick();
+        }
+        Finalize();
+    }
+};
 } // namespace Glx
