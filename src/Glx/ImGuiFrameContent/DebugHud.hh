@@ -10,7 +10,7 @@ namespace Glx::ImGuiFrameContent
 class DebugHud
 {
 public:
-    bool Enabled = true;
+    DebugHud(GlWindow &glWindow) : GlWindowInstance(glWindow) {}
 
     void Tick()
     {
@@ -23,10 +23,14 @@ public:
             ImGui::BringWindowToDisplayFront(ImGui::GetCurrentWindow());
 
             ImGui::Text("fps: %.1f%s", ImGui::GetIO().Framerate,
-                        Singleton::Get<GlWindow>().VsyncEnabled ? " vsync" : "");
+                        GlWindowInstance.VsyncEnabled ? " vsync" : "");
 
             ImGui::End();
         }
     }
+
+private:
+    bool Enabled = true;
+    GlWindow &GlWindowInstance;
 };
 } // namespace Glx::ImGuiFrameContent

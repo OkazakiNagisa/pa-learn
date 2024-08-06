@@ -54,5 +54,9 @@ public:
         }
         Finalize();
     }
+
+private:
+    GlWindow GlWindowInstance;
+    Logging LoggingInstance;
 };
 } // namespace Glx

@@ -12,6 +12,12 @@ namespace Glx
 class ImGuiBaseFrame
 {
 public:
+    ImGuiBaseFrame(GlWindow &glWindow)
+        : GlWindowInstance(glWindow), MainWindow(glWindow),
+          DebugHudWindow(glWindow)
+    {
+    }
+
     void Initialize()
     {
         // Setup Dear ImGui context
@@ -34,7 +40,7 @@ public:
 
         const char *glsl_version = "#version 130";
         // Setup Platform/Renderer backends
-        ImGui_ImplGlfw_InitForOpenGL(Singleton::Get<Glx::GlWindow>().GlfwWindowPtr, true);
+        ImGui_ImplGlfw_InitForOpenGL(GlWindowInstance.GlfwWindowPtr, true);
         ImGui_ImplOpenGL3_Init(glsl_version);
     }
 
@@ -47,8 +53,8 @@ public:
 
     void Tick()
     {
-        Singleton::Get<ImGuiFrameContent::Main>().Tick();
-        Singleton::Get<ImGuiFrameContent::DebugHud>().Tick();
+        MainWindow.Tick();
+        DebugHudWindow.Tick();
     }
 
     void PostTick()
@@ -76,5 +82,10 @@ public:
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
     }
+
+private:
+    GlWindow &GlWindowInstance;
+    ImGuiFrameContent::Main MainWindow;
+    ImGuiFrameContent::DebugHud DebugHudWindow;
 };
 } // namespace Glx
