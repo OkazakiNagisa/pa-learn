@@ -7,13 +7,6 @@ namespace Crtp
 template <class T>
 class Singleton
 {
-public:
-    static T &GetInstance()
-    {
-        static auto singleton = T();
-        return singleton;
-    }
-
 protected:
     Singleton() = default;
 
