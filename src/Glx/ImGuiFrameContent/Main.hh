@@ -1,7 +1,7 @@
 #pragma once
 #include <imgui.h>
 #include <Singleton.hh>
-#include "../GlWindow.hpp"
+#include "../GlWindow.hh"
 
 namespace Glx::ImGuiFrameContent
 {

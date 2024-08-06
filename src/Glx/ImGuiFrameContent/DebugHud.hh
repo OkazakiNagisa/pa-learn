@@ -2,8 +2,8 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <Singleton.hh>
-#include "Flags.hpp"
-#include "../GlWindow.hpp"
+#include "Flags.hh"
+#include "../GlWindow.hh"
 
 namespace Glx::ImGuiFrameContent
 {

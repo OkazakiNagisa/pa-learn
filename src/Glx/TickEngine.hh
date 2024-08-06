@@ -1,8 +1,8 @@
 #pragma once
 #include <Singleton.hh>
-#include "Logging.hpp"
-#include "GlWindow.hpp"
-#include "ImGuiBaseFrame.hpp"
+#include "Logging.hh"
+#include "GlWindow.hh"
+#include "ImGuiBaseFrame.hh"
 
 namespace Glx
 {

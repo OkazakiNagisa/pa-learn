@@ -1,5 +1,5 @@
 #include <Singleton.hh>
-#include "Glx/TickEngine.hpp"
+#include "Glx/TickEngine.hh"
 
 int main(int argc, char *argv[])
 {

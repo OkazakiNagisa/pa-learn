@@ -3,9 +3,9 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <Singleton.hh>
-#include "GlWindow.hpp"
-#include "ImGuiFrameContent/Main.hpp"
-#include "ImGuiFrameContent/DebugHud.hpp"
+#include "GlWindow.hh"
+#include "ImGuiFrameContent/Main.hh"
+#include "ImGuiFrameContent/DebugHud.hh"
 
 namespace Glx
 {
