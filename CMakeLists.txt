@@ -5,7 +5,7 @@ find_package(spdlog CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
-# find_package(Readline REQUIRED)
+find_package(unofficial-readline-win32 CONFIG REQUIRED)
 # find_package(LLVM CONFIG REQUIRED)
 
 add_library(dbg_macro INTERFACE)
@@ -22,8 +22,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     glad::glad
     glfw
     imgui::imgui
+    unofficial::readline-win32::readline
 )
 target_sources(${PROJECT_NAME} PRIVATE
     src/main.cc
+    src/LiteEmu/Cpu/Register.cc
 )
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)

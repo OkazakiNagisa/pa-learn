@@ -19,5 +19,5 @@ const std::array<word_t, 5> built_in_img = {
     0x0102c503, // lbu a0,16(t0)
     0x00100073, // ebreak (used as nemu_trap)
     0xdeadbeef, // some data
-}; // built-in image
+};
 } // namespace LiteEmu
