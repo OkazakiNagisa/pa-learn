@@ -2,27 +2,28 @@
 
 namespace LiteEmu
 {
-word_t Cpu::Register::GetPc()
+using Guest::WordType;
+WordType Cpu::Register::GetPc()
 {
     return Pc;
 }
 
-void Cpu::Register::SetPc(word_t pc)
+void Cpu::Register::SetPc(WordType pc)
 {
     Pc = pc;
 }
 
-word_t Cpu::Register::GetReg(int reg)
+WordType Cpu::Register::GetReg(int reg)
 {
     return Registers[reg];
 }
 
-word_t Cpu::Register::GetReg(std::string_view regName)
+WordType Cpu::Register::GetReg(std::string_view regName)
 {
     return GetReg(RegNameToIndex(regName));
 }
 
-void Cpu::Register::SetReg(int reg, word_t data)
+void Cpu::Register::SetReg(int reg, WordType data)
 {
     Registers[reg] = data;
 }
