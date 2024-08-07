@@ -13,11 +13,9 @@ constexpr bool Memory::IsValidAddress(Guest::PhyAddrType addr)
     return addr >= MEMORY_BASE && addr - MEMORY_BASE < MEMORY_SIZE;
 }
 
-ptr_t Memory::ToHostAddress(Guest::PhyAddrType addr)
+Ptr Memory::ToHostAddress(Guest::PhyAddrType addr)
 {
-    ptr_t ret;
-    ret.as_ptr = &PhysicalMemory[addr];
-    return ret;
+    return &PhysicalMemory[addr];
 }
 
 } // namespace LiteEmu

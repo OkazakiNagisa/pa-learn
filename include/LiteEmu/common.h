@@ -10,36 +10,14 @@ union ptr_t
 };
 using ptr_t = union ptr_t;
 
-class Ptr
+template <typename T, typename U>
+class MultipleCastable
 {
 public:
-    Ptr() = default;
-    Ptr(size_t value) : Value(value) {}
-    Ptr(void *value) : Value(reinterpret_cast<size_t>(value)) {}
+    MultipleCastable() = default;
+    MultipleCastable(T value) : Value(value) {}
 
-    operator size_t()
-    {
-        return Value;
-    }
-
-    operator void *()
-    {
-        return reinterpret_cast<void *>(Value);
-    }
-
-private:
-    size_t Value = 0;
-};
-
-template <typename T>
-class MultipleCaster
-{
-public:
-    MultipleCaster() = default;
-    MultipleCaster(T value) : Value(value) {}
-
-    template <typename U>
-    MultipleCaster(void *value) : Value(reinterpret_cast<size_t>(value))
+    MultipleCastable(U value) : Value(reinterpret_cast<T>(value))
     {
     }
 
@@ -48,7 +26,6 @@ public:
         return Value;
     }
 
-    template <typename U>
     operator U()
     {
         return reinterpret_cast<U>(Value);
@@ -57,4 +34,6 @@ public:
 private:
     T Value = 0;
 };
+
+using Ptr = MultipleCastable<size_t, void *>;
 } // namespace LiteEmu
