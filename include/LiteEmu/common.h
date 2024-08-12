@@ -35,5 +35,12 @@ private:
     T Value = 0;
 };
 
-using Ptr = MultipleCastable<size_t, void *>;
+class Ptr : public MultipleCastable<size_t, uint8_t *>
+{
+public:
+    uint8_t &operator[](Ptr ptr)
+    {
+        return *ptr;
+    }
+};
 } // namespace LiteEmu

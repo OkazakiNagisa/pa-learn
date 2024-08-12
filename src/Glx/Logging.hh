@@ -11,7 +11,7 @@ public:
 
     void Initialize()
     {
-        spdlog::set_pattern("[%H:%M:%S.%e %^%L%$] (%s:%#) %v");
+        spdlog::set_pattern("[%H:%M:%S.%e %^%L%$] %!(%s:%#): %v");
         spdlog::set_level(spdlog::level::info);
 
         Logger = spdlog::stdout_color_mt("Logger");

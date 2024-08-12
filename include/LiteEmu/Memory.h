@@ -11,6 +11,7 @@ public:
     void Write(Def::PhyAddrType addr, Def::WordType data, int len);
     constexpr bool IsValidAddress(Def::PhyAddrType addr);
     Ptr ToHostAddress(Def::PhyAddrType addr);
+    Def::PhyAddrType ToGuestAddress(Ptr addr);
 
 private:
     std::array<uint8_t, Def::MEMORY_SIZE> PhysicalMemory;
