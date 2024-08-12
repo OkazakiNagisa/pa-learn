@@ -13,21 +13,26 @@ public:
     void Execute(Def::WordType inst, Register &registers, Memory &memory);
 
 private:
-    enum class InstType
+    class Instruction
     {
-        I,
-        U,
-        S,
-        R,
-        J,
-        B,
-        N
-    } InstType;
+    public:
+        enum class Type : int
+        {
+            N = 0,
+            R,
+            I,
+            S,
+            B,
+            U,
+            J,
+        } Type = Type::N;
 
-    Def::WordType DestRegIdx = 0, Src1RegIdx = 0, Src2RedIdx = 0, Imm = 0;
+        Def::WordType Inst = 0, DestRegIdx = 0, Src1RegIdx = 0, Src2RedIdx = 0,
+                      Imm = 0;
+    } Inst;
 
-    void FetchAndDecode();
-    void ExecDispatch();
+    void FetchAndDecode(Register &registers, Memory &memory);
+    void ExecDispatch(Register &registers, Memory &memory);
 };
 }; // namespace Cpu
 } // namespace LiteEmu
