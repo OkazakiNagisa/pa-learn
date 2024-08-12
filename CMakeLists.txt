@@ -26,6 +26,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 )
 target_sources(${PROJECT_NAME} PRIVATE
     src/main.cc
-    src/LiteEmu/Cpu/Register.cc
+    src/LiteEmu/Memory.cc
+    src/LiteEmu/Cpu/Register-riscv32.cc
 )
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)

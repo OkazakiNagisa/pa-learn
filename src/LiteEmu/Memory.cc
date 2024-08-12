@@ -1,21 +1,29 @@
 #include <LiteEmu/Memory.h>
+#include <cassert>
+#include <spdlog/spdlog.h>
 
 namespace LiteEmu
 {
-using namespace Guest;
+using namespace Def;
 
 WordType Memory::Read(PhyAddrType addr, int len) {}
 
-void Memory::Write(Guest::PhyAddrType addr, Guest::WordType data, int len) {}
+void Memory::Write(PhyAddrType addr, WordType data, int len) {}
 
-constexpr bool Memory::IsValidAddress(Guest::PhyAddrType addr)
+constexpr bool Memory::IsValidAddress(PhyAddrType addr)
 {
     return addr >= MEMORY_BASE && addr - MEMORY_BASE < MEMORY_SIZE;
 }
 
-Ptr Memory::ToHostAddress(Guest::PhyAddrType addr)
+Ptr Memory::ToHostAddress(PhyAddrType addr)
 {
-    return &PhysicalMemory[addr];
+    if (IsValidAddress(addr))
+        return &PhysicalMemory[addr];
+    else
+    {
+        SPDLOG_ERROR("guest memory out of range {}", addr);
+        assert(false);
+    }
 }
 
 } // namespace LiteEmu

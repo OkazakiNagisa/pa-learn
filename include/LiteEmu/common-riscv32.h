@@ -3,7 +3,7 @@
 #include <array>
 #include <type_traits>
 
-namespace LiteEmu::Guest
+namespace LiteEmu::Def
 {
 constexpr uint64_t MEMORY_SIZE = 0x80000000;
 constexpr uint64_t MEMORY_BASE = 0x80000000;
