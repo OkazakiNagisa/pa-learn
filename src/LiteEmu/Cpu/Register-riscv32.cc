@@ -47,7 +47,7 @@ Cpu::Register::Regs Cpu::Register::RegNameToEnum(std::string_view regName)
         if (regName == RegNames[i])
             return static_cast<Regs>(i);
     }
-    SPDLOG_ERROR("unknown regname {}", regName);
+    SPDLOG_ERROR("Unknown regname {}", regName);
     assert(false);
 }
 
@@ -58,7 +58,7 @@ int Cpu::Register::RegNameToIndex(std::string_view regName)
         if (regName == RegNames[i])
             return i;
     }
-    SPDLOG_ERROR("unknown regname {}", regName);
+    SPDLOG_ERROR("Unknown regname {}", regName);
     assert(false);
 }
 } // namespace LiteEmu
