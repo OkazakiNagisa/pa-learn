@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <imgui.h>
+#include <Glx/common.h>
 
 namespace Glx
 {
