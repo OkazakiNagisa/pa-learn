@@ -14,7 +14,7 @@ WordType Memory::Read(PhyAddrType addr, int len)
         if (std::is_same_v<WordType, uint32_t> ||
             std::is_same_v<WordType, uint64_t> && len != 8)
         {
-            SPDLOG_ERROR("Invalid read length: {}", len);
+            LogErr("Invalid read length: {}", len);
             assert(false);
         }
     }
@@ -37,7 +37,7 @@ void Memory::Write(PhyAddrType addr, WordType data, int len)
         if (std::is_same_v<WordType, uint32_t> ||
             std::is_same_v<WordType, uint64_t> && len != 8)
         {
-            SPDLOG_ERROR("Invalid write length: {}", len);
+            LogErr("Invalid write length: {}", len);
             assert(false);
         }
     }
@@ -58,7 +58,7 @@ Ptr Memory::ToHostAddress(PhyAddrType addr)
 {
     if (!IsValidAddress(addr))
     {
-        SPDLOG_ERROR("Guest memory out of range {:x}", addr);
+        LogErr("Guest memory out of range {:x}", addr);
         assert(false);
     }
     return &PhysicalMemory[addr];
@@ -69,7 +69,7 @@ PhyAddrType Memory::ToGuestAddress(Ptr addr)
     PhyAddrType guestAddr = addr - MEMORY_BASE;
     if (!IsValidAddress(guestAddr))
     {
-        SPDLOG_ERROR("Host memory out of guest range {:x}", (size_t)addr);
+        LogErr("Host memory out of guest range {:x}", (size_t)addr);
         assert(false);
     }
     return guestAddr;

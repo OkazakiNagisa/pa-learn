@@ -17,15 +17,47 @@ void Cpu::Executor::Decode(Def::WordType inst)
     Inst.BitVal.FullInst = inst;
 }
 
-void Cpu::Executor::ExecDispatch(Register &registers, Memory &memory) {}
-
-bool Cpu::Executor::PatternMatch(std::string_view pat, Def::WordType inst)
+void Cpu::Executor::ExecDispatch(Register &registers, Memory &memory)
 {
-    for (int idx = 0; const auto c : pat)
+    auto patternMatcher = [&, this](const std::string_view pat,
+                                    const std::string_view opName,
+                                    InstType type, auto func) {
+        if (PatternMatch(pat, this->Inst.BitVal.FullInst))
+        {
+            switch (type)
+            {
+            case InstType::R:
+                break;
+            case InstType::I:
+                Inst.Imm = Util::SignExtend(Inst.BitVal.I.Imm, 12);
+                break;
+            case InstType::S:
+                Inst.Imm = Util::SignExtend(Inst.S.GetImm0_11(), 12);
+                break;
+            case InstType::B:
+
+            case InstType::U:
+            case InstType::J:
+            default:
+                LogErr("InstType not set");
+                assert(false);
+            }
+            func();
+        };
+    };
+    patternMatcher("??????? ????? ????? ??? ????? 01101 11", "lui", InstType::U,
+                   [&]() {});
+}
+
+bool Cpu::Executor::PatternMatch(const std::string_view pat, Def::WordType inst)
+{
+    int idx = 0;
+    for (auto it = pat.rbegin(); it != pat.rend(); it++)
     {
+        auto c = *it;
         if (idx >= 32)
         {
-            SPDLOG_ERROR("Pattern {} overflowed", pat);
+            LogErr("Pattern {} overflowed", pat);
             assert(false);
         }
 
@@ -33,17 +65,25 @@ bool Cpu::Executor::PatternMatch(std::string_view pat, Def::WordType inst)
         {
         case ' ':
             continue;
-        case '?':
-        {
-            idx++;
+        case '1':
+            if ((inst & 1) == 0)
+                return false;
             inst >>= 1;
+            idx++;
             continue;
-        }
+        case '0':
+            if ((inst & 1) == 1)
+                return false;
+            inst >>= 1;
+            idx++;
+            continue;
+        case '?':
+            inst >>= 1;
+            idx++;
+            continue;
         default:
-        {
-            SPDLOG_ERROR("Pattern {} error", pat);
+            LogErr("Pattern {} error", pat);
             assert(false);
-        }
         }
     }
     return true;

@@ -20,11 +20,11 @@ public:
     int Initialize()
     {
         glfwSetErrorCallback([](int error, const char *description) {
-            SPDLOG_ERROR("GLFW Error {}: {}", error, description);
+            LogErr("GLFW Error {}: {}", error, description);
         });
         if (!glfwInit())
         {
-            SPDLOG_ERROR("glfwInit Error!");
+            LogErr("glfwInit Error!");
             return -1;
         }
 
@@ -38,7 +38,7 @@ public:
             glfwCreateWindow(Width, Height, Title.c_str(), nullptr, nullptr);
         if (GlfwWindowPtr == nullptr)
         {
-            SPDLOG_ERROR("glfwCreateWindow Error!");
+            LogErr("glfwCreateWindow Error!");
             glfwTerminate();
             return -1;
         }
@@ -50,7 +50,7 @@ public:
 
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
-            SPDLOG_ERROR("gladLoadGLLoader failed");
+            LogErr("gladLoadGLLoader failed");
             glfwDestroyWindow(GlfwWindowPtr);
             glfwTerminate();
             return -1;

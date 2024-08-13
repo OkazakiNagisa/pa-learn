@@ -13,19 +13,20 @@ public:
     void Execute(Register &registers, Memory &memory);
 
 private:
+    enum class InstType : int
+    {
+        N = 0,
+        R,
+        I,
+        S,
+        B,
+        U,
+        J,
+    };
     class Instruction
     {
     public:
-        enum class Type : int
-        {
-            N = 0,
-            R,
-            I,
-            S,
-            B,
-            U,
-            J,
-        } Type = Type::N;
+        InstType Type = InstType::N;
 
         union
         {
@@ -80,6 +81,8 @@ private:
                 };
             };
         } BitVal = {.FullInst = 0};
+
+        Def::WordType Imm;
 
         class S
         {
