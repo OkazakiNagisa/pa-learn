@@ -5,18 +5,17 @@ namespace LiteEmu
 {
 using Def::WordType;
 
-void Cpu::Executor::Execute(Def::WordType inst, Cpu::Register &registers,
+void Cpu::Executor::Execute(Cpu::Register &registers,
                             Memory &memory)
 {
-    Inst.Inst = inst;
-    FetchAndDecode(registers, memory);
+    auto inst = Fetch(registers, memory);
+    Decode(inst);
     ExecDispatch(registers, memory);
 }
 
-void Cpu::Executor::FetchAndDecode(Register &registers, Memory &memory)
+void Cpu::Executor::Decode(Def::WordType inst)
 {
-    auto inst = Inst.Inst;
-
+    Inst.FullInst = inst;
 }
 
 void Cpu::Executor::ExecDispatch(Register &registers, Memory &memory) {}
