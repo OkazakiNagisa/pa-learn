@@ -29,7 +29,7 @@ private:
 
         union
         {
-            Def::WordType FullInst = 0;
+            Def::WordType FullInst;
             struct
             {
                 Def::WordType Opcode : 7;
@@ -79,18 +79,13 @@ private:
                     } J;
                 };
             };
-        } BitVal;
+        } BitVal = {.FullInst = 0};
 
         class S
         {
         public:
             S(Instruction &thisInst) : ThisInst(thisInst) {}
-            Def::WordType GetImm0_11()
-            {
-                auto imm0_4 = ThisInst.BitVal.S.Imm0_4;
-                auto imm5_11_shifted = ThisInst.BitVal.S.Imm5_11 << 5;
-                return imm0_4 & 0b11111 | imm5_11_shifted & 0b1111111'00000;
-            }
+            Def::WordType GetImm0_11();
 
         private:
             const Instruction &ThisInst;
@@ -100,20 +95,7 @@ private:
         {
         public:
             B(Instruction &thisInst) : ThisInst(thisInst) {}
-            Def::WordType GetImm1_12()
-            {
-                auto inst = ThisInst.BitVal.FullInst;
-                Def::WordType imm1_4_shifted =
-                    inst & 0b0000000'00000'00000'000'11110'0000000 >> 7;
-                Def::WordType imm5_10_shifted =
-                    inst & 0b0111111'00000'00000'000'00000'0000000 >> (25 - 5);
-                Def::WordType imm11_shifted =
-                    inst & 0b0000000'00000'00000'000'00001'0000000 << (11 - 7);
-                Def::WordType imm12_shifted =
-                    inst & 0b1000000'00000'00000'000'00000'0000000 >> (31 - 12);
-                return imm1_4_shifted | imm5_10_shifted | imm11_shifted |
-                       imm12_shifted;
-            }
+            Def::WordType GetImm1_12();
 
         private:
             const Instruction &ThisInst;
@@ -123,20 +105,7 @@ private:
         {
         public:
             J(Instruction &thisInst) : ThisInst(thisInst) {}
-            Def::WordType GetImm1_20()
-            {
-                auto inst = ThisInst.BitVal.FullInst;
-                Def::WordType imm1_10_shifted =
-                    inst & 0b0111111'11110'00000'000'00000'0000000 >> 7;
-                Def::WordType imm11_shifted =
-                    inst & 0b0000000'00001'00000'000'00000'0000000 >> (25 - 5);
-                Def::WordType imm12_19_shifted =
-                    inst & 0b0000000'00000'00000'000'00001'0000000 << (11 - 7);
-                Def::WordType imm20_shifted =
-                    inst & 0b1000000'00000'00000'000'00000'0000000 >> (31 - 12);
-                return imm1_10_shifted | imm11_shifted | imm12_19_shifted |
-                       imm20_shifted;
-            }
+            Def::WordType GetImm1_20();
 
         private:
             const Instruction &ThisInst;
@@ -146,6 +115,8 @@ private:
     Def::WordType Fetch(Cpu::Register &registers, Memory &memory);
     void Decode(Def::WordType inst);
     void ExecDispatch(Register &registers, Memory &memory);
+
+    bool PatternMatch(std::string_view pat, Def::WordType inst);
 };
 }; // namespace Cpu
 } // namespace LiteEmu
