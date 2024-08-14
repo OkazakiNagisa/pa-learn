@@ -30,7 +30,7 @@ private:
 
         union
         {
-            Def::WordType FullInst;
+            Def::WordType FullVal;
             struct
             {
                 Def::WordType Opcode : 7;
@@ -80,39 +80,14 @@ private:
                     } J;
                 };
             };
-        } BitVal = {.FullInst = 0};
+        } BitVal = {.FullVal = 0};
+        static_assert(sizeof(BitVal) == 4, "");
 
         Def::WordType Imm;
 
-        class S
-        {
-        public:
-            S(Instruction &thisInst) : ThisInst(thisInst) {}
-            Def::WordType GetImm0_11();
-
-        private:
-            const Instruction &ThisInst;
-        } S = *this;
-
-        class B
-        {
-        public:
-            B(Instruction &thisInst) : ThisInst(thisInst) {}
-            Def::WordType GetImm1_12();
-
-        private:
-            const Instruction &ThisInst;
-        } B = *this;
-
-        class J
-        {
-        public:
-            J(Instruction &thisInst) : ThisInst(thisInst) {}
-            Def::WordType GetImm1_20();
-
-        private:
-            const Instruction &ThisInst;
-        } J = *this;
+        Def::WordType GetImmS_0_11();
+        Def::WordType GetImmB_1_12();
+        Def::WordType GetImmJ_1_20();
     } Inst;
 
     Def::WordType Fetch(Cpu::Register &registers, Memory &memory);

@@ -14,7 +14,7 @@ void Cpu::Executor::Execute(Cpu::Register &registers, Memory &memory)
 
 void Cpu::Executor::Decode(Def::WordType inst)
 {
-    Inst.BitVal.FullInst = inst;
+    Inst.BitVal.FullVal = inst;
 }
 
 void Cpu::Executor::ExecDispatch(Register &registers, Memory &memory)
@@ -22,7 +22,7 @@ void Cpu::Executor::ExecDispatch(Register &registers, Memory &memory)
     auto patternMatcher = [&, this](const std::string_view pat,
                                     const std::string_view opName,
                                     InstType type, auto func) {
-        if (PatternMatch(pat, this->Inst.BitVal.FullInst))
+        if (PatternMatch(pat, this->Inst.BitVal.FullVal))
         {
             switch (type)
             {
@@ -89,16 +89,16 @@ bool Cpu::Executor::PatternMatch(const std::string_view pat, Def::WordType inst)
     return true;
 }
 
-Def::WordType Cpu::Executor::Instruction::S::GetImm0_11()
+Def::WordType Cpu::Executor::Instruction::GetImmS_0_11()
 {
-    auto imm0_4 = ThisInst.BitVal.S.Imm0_4;
-    auto imm5_11_shifted = ThisInst.BitVal.S.Imm5_11 << 5;
+    auto imm0_4 = BitVal.S.Imm0_4;
+    auto imm5_11_shifted = BitVal.S.Imm5_11 << 5;
     return imm0_4 & 0b11111 | imm5_11_shifted & 0b1111111'00000;
 }
 
-Def::WordType Cpu::Executor::Instruction::B::GetImm1_12()
+Def::WordType Cpu::Executor::Instruction::GetImmB_1_12()
 {
-    auto inst = ThisInst.BitVal.FullInst;
+    auto inst = BitVal.FullVal;
     Def::WordType imm1_4_shifted =
         inst & 0b0000000'00000'00000'000'11110'0000000 >> 7;
     Def::WordType imm5_10_shifted =
@@ -110,9 +110,9 @@ Def::WordType Cpu::Executor::Instruction::B::GetImm1_12()
     return imm1_4_shifted | imm5_10_shifted | imm11_shifted | imm12_shifted;
 }
 
-Def::WordType Cpu::Executor::Instruction::J::GetImm1_20()
+Def::WordType Cpu::Executor::Instruction::GetImmJ_1_20()
 {
-    auto inst = ThisInst.BitVal.FullInst;
+    auto inst = BitVal.FullVal;
     Def::WordType imm1_10_shifted =
         inst & 0b0111111'11110'00000'000'00000'0000000 >> 20;
     Def::WordType imm11_shifted =
